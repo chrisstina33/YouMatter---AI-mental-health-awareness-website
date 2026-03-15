@@ -56,20 +56,24 @@ body.pauseClouds .cloud { animation-play-state: paused; }
 }
 
 /* SETTINGS BUTTON */
+/* SETTINGS BUTTON */
 #settings_button {
-    width: 55px;
-    height: 55px;
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    width: 60px;
+    height: 60px;
     border-radius: 50%;
     border: none;
-    background: white;
     cursor: pointer;
+    overflow: hidden;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+    z-index: 2;
+    padding: 0;
     display: flex;
     align-items: center;
     justify-content: center;
-    overflow: hidden;
-    box-shadow: 0 5px 20px rgba(0,0,0,0.2);
-    transition: all 0.3s;
-    z-index: 3;
+    background: transparent;
 }
 #settings_button img {
     width: 100%;
