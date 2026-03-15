@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="UTF-8">
+<title>Create Account</title>
+
+<style>
+
+body{
+
+margin:0;
+font-family:"Segoe UI";
+background:#B2EBF2;
+
+display:flex;
+justify-content:center;
+align-items:center;
+
+height:100vh;
+
+}
+
+#container{
+
+background:white;
+
+padding:30px;
+
+border-radius:12px;
+
+width:320px;
+
+text-align:center;
+
+box-shadow:0 8px 20px rgba(0,0,0,0.15);
+
+}
+
+input{
+
+width:100%;
+
+padding:12px;
+
+margin:10px 0;
+
+border-radius:6px;
+
+border:1px solid #ccc;
+
+}
+
+button{
+
+width:100%;
+
+padding:12px;
+
+border:none;
+
+border-radius:8px;
+
+cursor:pointer;
+
+font-size:14px;
+
+}
+
+#createBtn{
+
+background:#4CAF50;
+
+color:white;
+
+}
+
+#googleBtn{
+
+background:#4285F4;
+
+color:white;
+
+margin-top:10px;
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div id="container">
+
+<h2>Create Account</h2>
+
+<input
+type="email"
+id="email"
+placeholder="Enter your email"
+>
+
+<button id="createBtn">
+Create Account
+</button>
+
+<p style="margin-top:15px">
+
+Already have an account?
+
+<a href="sign_in.html">
+Sign In
+</a>
+
+</p>
+
+</div>
+
+<script>
+
+const createBtn = document.getElementById("createBtn");
+
+createBtn.addEventListener("click",()=>{
+
+const email = document.getElementById("email").value;
+
+if(email===""){
+alert("Enter email");
+return;
+}
+
+localStorage.setItem("userEmail",email);
+
+alert("Account created!");
+
+window.location.href="main_page.html";
+
+});
+
+</script>
+
+</body>
+
+</html>
