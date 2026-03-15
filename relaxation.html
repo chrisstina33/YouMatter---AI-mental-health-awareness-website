@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Serenity Guide: A Journey to Well-being</title>
+    <style>
+        :root {
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --primary: #7d9d9c;
+            --secondary: #a3b18a;
+            --accent: #d4a373;
+            --text-main: #2d3436;
+            --text-muted: #636e72;
+            --soft-purple: #b4a7d6;
+            --radius: 24px;
+            --shadow: 0 10px 30px rgba(0,0,0,0.05);
+            --safe-top: env(safe-area-inset-top, 34px);
+            --safe-bottom: env(safe-area-inset-bottom, 20px);
+            --safe-left: env(safe-area-inset-left, 16px);
+            --safe-right: env(safe-area-inset-right, 16px);
+        }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: var(--bg-color);
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            color: var(--text-main);
+            line-height: 1.6;
+            user-select: none;
+            overflow: hidden;
+        }
+
+        #app-container {
+            width: min(95vw, 1200px);
+            height: min(92vh, 900px);
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+        }
+
+        header {
+            padding: clamp(1.5rem, 5vw, 2.5rem) var(--safe-right) 1rem var(--safe-left);
+            background: linear-gradient(135deg, #fdfcfb 0%, #e2d1c3 100%);
+            text-align: center;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: clamp(1.5rem, 6vw, 2.5rem);
+            font-weight: 700;
+            color: var(--primary);
+            letter-spacing: -0.5px;
+        }
+
+        header p {
+            margin: 0.5rem 0 0;
+            font-size: clamp(0.9rem, 3vw, 1.1rem);
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        .stats-bar {
+            display: flex;
+            justify-content: space-around;
+            padding: 1rem;
+            background: #fdfcfb;
+            border-radius: 15px;
+            margin: 1rem;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .stat-val {
+            color: var(--primary);
+            font-size: 1.1rem;
+        }
+
+        .nav-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            padding: 1rem;
+            overflow-x: auto;
+            white-space: nowrap;
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        .nav-tabs::-webkit-scrollbar { display: none; }
+
+        .nav-btn {
+            padding: 0.6rem 1.2rem;
+            border-radius: 50px;
+            border: none;
+            background: #f1f3f5;
+            color: var(--text-muted);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .nav-btn.active {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 4px 12px rgba(125, 157, 156, 0.3);
+        }
+
+        main {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1rem var(--safe-right) var(--safe-bottom) var(--safe-left);
+            scroll-behavior: smooth;
+        }
+
+        .section-intro {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding: 0 1rem;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            padding-bottom: 2rem;
+        }
+
+        .card {
+            background: #fff;
+            border: 1px solid #f0f0f0;
+            border-radius: 20px;
+            padding: 1.5rem;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.08);
+        }
+
+        .card-tag {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+            width: fit-content;
+        }
+
+        .tag-breathing { background: #e0f2f1; color: #00796b; }
+        .tag-body { background: #fff3e0; color: #ef6c00; }
+        .tag-mind { background: #f3e5f5; color: #7b1fa2; }
+        .tag-extra { background: #e8f5e9; color: #2e7d32; }
+
+        .card h3 {
+            margin: 0 0 0.5rem 0;
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card p {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+        }
+
+        .steps-box {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .steps-box ol {
+            margin: 0;
+            padding-left: 1.2rem;
+            font-size: 0.9rem;
+        }
+
+        .steps-box li { margin-bottom: 0.4rem; }
+
+        .benefits-badge {
+            font-size: 0.85rem;
+            color: var(--primary);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .favorite-btn {
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 5px;
+            transition: transform 0.2s;
+        }
+
+        .favorite-btn:active { transform: scale(1.3); }
+
+        .source-text {
+            font-size: 0.7rem;
+            color: #b2bec3;
+            margin-top: auto;
+            padding-top: 1rem;
+            font-style: italic;
+        }
+
+        footer {
+            padding: 1rem;
+            text-align: center;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            border-top: 1px solid rgba(0,0,0,0.05);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .animate-in { animation: fadeIn 0.5s ease forwards; }
+
+        main::-webkit-scrollbar { width: 6px; }
+        main::-webkit-scrollbar-track { background: transparent; }
+        main::-webkit-scrollbar-thumb {
+            background: #e0e0e0;
+            border-radius: 10px;
+        }
+
+        @media (max-width: 480px) {
+            #app-container { width: 100vw; height: 100vh; border-radius: 0; }
+            .grid-container { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<div id="app-container">
+    <header>
+        <h1>Serenity Guide 🌿</h1>
+        <p>Your curated itinerary for mental resilience</p>
+    </header>
+
+    <div class="stats-bar">
+        <div class="stat-item">
+            <span class="stat-val" id="fav-count">0</span>
+            <span>Favorites</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-val">13</span>
+            <span>Destinations</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-val">∞</span>
+            <span>Peace</span>
+        </div>
+    </div>
+
+    <div class="nav-tabs">
+        <button class="nav-btn active" onclick="filterContent('all', this)">All Regions</button>
+        <button class="nav-btn" onclick="filterContent('breathing', this)">Breathwork Valley</button>
+        <button class="nav-btn" onclick="filterContent('body', this)">Somatic Sanctuary</button>
+        <button class="nav-btn" onclick="filterContent('mind', this)">Cognitive Clouds</button>
+        <button class="nav-btn" onclick="filterContent('extra', this)">Bonus Retreats</button>
+    </div>
+
+    <main id="main-content">
+        <div class="section-intro">
+            <h2>Welcome, Traveler.</h2>
+            <p>Explore evidence-based techniques to regulate your nervous system and find your center.</p>
+        </div>
+
+        <div class="grid-container" id="techniques-grid"></div>
+    </main>
+
+    <footer>
+        &copy; 2026 Relaxation Exercises • Evidence-Based Wellness (Serenity Guide)
+    </footer>
+</div>
+
+<script>
+    const APP_STORAGE_KEY = 'SERENITY_GUIDE_V1';
+
+    const techniques = [
+        {id:'t1', category:'breathing', title:'Deep Breathing', emoji:'🌬️', desc:'A fundamental tool to lower heart rate and cortisol levels.', steps:['Sit or lie comfortably.','Inhale slowly through nose (4s).','Hold breath (2-3s).','Exhale slowly through mouth (6s).','Repeat 5-10 times.'], benefits:'Reduces sympathetic activity & calms anxiety.', source:'Geetanjali et al., 2023; Kim & Kim, 2018'},
+        {id:'t2', category:'breathing', title:'Mindfulness Meditation', emoji:'🧘', desc:'Present-moment awareness to regulate emotions.', steps:['Sit comfortably, eyes closed.','Focus on breath or bodily sensations.','Notice thoughts without judgment.','Practice for 5–15 minutes daily.'], benefits:'Reduces rumination & lowers stress.', source:'Wharton & Kanas, 2019; Bohlmeijer et al., 2010'},
+        {id:'t3', category:'body', title:'Progressive Muscle Relaxation', emoji:'💪', desc:'Systematically tensing and releasing muscle groups.', steps:['Tense muscles (feet to face) for 5s.','Release tension completely.','Notice the difference in sensation.'], benefits:'Reduces muscle stiffness & alleviates anxiety.', source:'Muhammad Khir, 2024; Montero-Marin, 2019'},
+        {id:'t4', category:'body', title:'Relaxed Shoulders', emoji:'🦒', desc:'Targeting the most common area for stress accumulation.', steps:['Raise shoulders toward ears.','Hold for 3 seconds.','Release fully and drop them low.','Repeat 8–10 times.'], benefits:'Relieves neck and upper back tension.', source:'General Wellness Practice'},
+        {id:'t5', category:'body', title:'Body Stretching', emoji:'🙆', desc:'Simple movements to energize and improve circulation.', steps:['Stretch arms overhead.','Take a deep breath.','Stretch back and arms for 5s.','Exhale and relax.'], benefits:'Improves circulation & reduces stiffness.', source:'Geetanjali et al., 2023; Smith, 2005'},
+        {id:'t6', category:'mind', title:'Calm Visualization', emoji:'🏖️', desc:'Mental escape to a peaceful environment.', steps:['Close eyes and imagine a forest or beach.','Focus on colors, sounds, and smells.','Breathe slowly for 2–3 minutes.'], benefits:'Lowers cortisol & shifts attention from stress.', source:'Kim & Kim, 2018; Montero-Marin, 2019'},
+        {id:'t7', category:'mind', title:'Guided Imagery & Music', emoji:'🎶', desc:'Combining auditory and visual relaxation.', steps:['Listen to calm, ambient music.','Imagine relaxing scenes matching the rhythm.','Focus on physical sensations of calm.'], benefits:'Enhances mental clarity & emotional relaxation.', source:'General Wellness Practice'},
+        {id:'t8', category:'mind', title:'Mindfulness-Based Therapy', emoji:'🧠', desc:'Combining awareness with cognitive reflection.', steps:['Observe thought patterns without judgment.','Apply mindful awareness to daily stressors.','Reflect on thoughts as passing clouds.'], benefits:'Reduces depressive relapse & improves attention.', source:'Gu et al., 2015; Wharton & Kanas, 2019'},
+        {id:'t9', category:'extra', title:'Yoga', emoji:'🤸', desc:'The union of breath, movement, and meditation.', steps:['Follow a gentle flow of poses.','Sync movement with deep inhalations.','End with Savasana (corpse pose).'], benefits:'Reduces anxiety & improves flexibility.', source:'Smith et al., 2007'},
+        {id:'t10', category:'extra', title:'Tai Chi', emoji:'🌊', desc:'Meditation in motion through flowing movements.', steps:['Perform slow, circular movements.','Maintain a rooted, balanced posture.','Focus on the flow of energy (Qi).'], benefits:'Enhances balance & reduces distress.', source:'Janssen et al., 2018'},
+        {id:'t11', category:'extra', title:'Biofeedback (HRV)', emoji:'⌚', desc:'Monitoring signals to teach self-regulation.', steps:['Use a monitor to track heart rate.','Practice breathing to sync heart rhythm.','Observe how calm thoughts affect data.'], benefits:'Teaches physiological self-regulation.', source:'Hamdani et al., 2022'},
+        {id:'t12', category:'extra', title:'Aromatherapy', emoji:'🪻', desc:'Using scent to trigger relaxation responses.', steps:['Inhale essential oils (Lavender, Bergamot).','Combine with deep breathing.','Create a ritual around the scent.'], benefits:'Complements other relaxation practices.', source:'Call et al., 2014'},
+        {id:'t13', category:'extra', title:'Art & Journaling', emoji:'🎨', desc:'Externalizing stress through creative expression.', steps:['Write freely about your feelings.','Draw or paint without a specific goal.','Reflect on the created work.'], benefits:'Promotes mental reflection & stress release.', source:'Shah et al., 2014'}
+    ];
+
+    let favorites = [];
+
+    function init() {
+        const saved = localStorage.getItem(APP_STORAGE_KEY + '_favs');
+        favorites = saved ? JSON.parse(saved) : [];
+        renderTechniques('all');
+        updateFavCount();
+
+        document.body.addEventListener('dblclick', e => e.preventDefault());
+        document.addEventListener("focusin", e => {
+            if(e.target.tagName === "INPUT" && e.target.type !== "text") setTimeout(()=>e.target.blur(),100);
+        });
+    }
+
+    function saveData() { localStorage.setItem(APP_STORAGE_KEY + '_favs', JSON.stringify(favorites)); }
+    function updateFavCount() { document.getElementById('fav-count').innerText = favorites.length; }
+
+    function toggleFavorite(id, btn) {
+        const index = favorites.indexOf(id);
+        if(index > -1){ favorites.splice(index,1); btn.innerText='🤍'; }
+        else { favorites.push(id); btn.innerText='❤️'; }
+        saveData(); updateFavCount();
+    }
+
+    function filterContent(category, btn){
+        document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+        btn.classList.add('active');
+        renderTechniques(category);
+    }
+
+    function renderTechniques(filter){
+        const grid = document.getElementById('techniques-grid');
+        grid.innerHTML = '';
+        const filtered = filter==='all'? techniques : techniques.filter(t=>t.category===filter);
+
+        filtered.forEach((t,index)=>{
+            const isFav = favorites.includes(t.id);
+            const card = document.createElement('div');
+            card.className='card animate-in';
+            card.style.animationDelay=`${index*0.05}s`;
+            card.innerHTML=`
+                <button class="favorite-btn" onclick="toggleFavorite('${t.id}', this)">
+                    ${isFav?'❤️':'🤍'}
+                </button>
+                <span class="card-tag tag-${t.category}">${t.category}</span>
+                <h3><span>${t.emoji}</span> ${t.title}</h3>
+                <p>${t.desc}</p>
+                <div class="steps-box">
+                    <ol>${t.steps.map(step=>`<li>${step}</li>`).join('')}</ol>
+                </div>
+                <div class="benefits-badge">✨ ${t.benefits}</div>
+                <div class="source-text">Source: ${t.source}</div>
+            `;
+            grid.appendChild(card);
+        });
+    }
+
+    window.addEventListener('load', init);
+</script>
+
+</body>
+</html>

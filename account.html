@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<title>Your Account</title>
+
+<style>
+
+body{
+margin:0;
+font-family:"Times New Roman";
+background:#B2EBF2;
+display:flex;
+justify-content:center;
+align-items:center;
+height:100vh;
+}
+
+#account_container{
+
+background:white;
+
+padding:40px;
+
+border-radius:14px;
+
+width:400px;
+
+text-align:center;
+
+box-shadow:0 8px 20px rgba(0,0,0,0.2);
+
+}
+
+#pfp{
+
+width:120px;
+height:120px;
+
+border-radius:50%;
+
+object-fit:cover;
+
+margin-bottom:20px;
+
+}
+
+.info{
+margin:10px 0;
+font-size:18px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div id="account_container">
+
+<img id="pfp" src="images/pfp24.jpg">
+
+<h2 id="user_name">User</h2>
+
+<div class="info" id="user_email"></div>
+
+<div class="info" id="member_since"></div>
+
+<div class="info">Membership: Standard</div>
+
+</div>
+
+<script>
+
+const email = localStorage.getItem("userEmail");
+
+document.getElementById("user_email").innerText = "Email: " + email;
+
+const today = new Date().toLocaleDateString();
+
+document.getElementById("member_since").innerText =
+"Member since: " + today;
+
+</script>
+
+</body>
+</html>
