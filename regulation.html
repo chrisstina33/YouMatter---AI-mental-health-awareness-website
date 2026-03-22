@@ -548,7 +548,7 @@ body.dark .sidebar-section input[type="text"]{
                     <div id="breathCircle" class="circle"></div>
                 </div>
                 <div id="breathLabel" class="breath-label">Ready?</div>
-                <button id="startBreathBtn" onclick="toggleBreathing()">Start Breathing Exercise</button>
+                <button id="startBreathBtn" onclick="logPractice('Breathing')">Start Breathing Exercise</button>
             </div>
             
             <p><strong>Benefits:</strong> Reduces heart rate, lowers cortisol, increases calm focus.</p>
@@ -632,8 +632,7 @@ function getContrastColor(bgColor) {
 function goTo(url){
     window.location.href = url;
 }
-
-      // Breathing Tool Logic
+// Breathing Tool Logic
     let breathingInterval;
     let isBreathing = false;
     const circle = document.getElementById('breathCircle');
