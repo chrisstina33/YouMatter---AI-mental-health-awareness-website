@@ -2,239 +2,351 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>YouMatter</title>
 <style>
-/* BODY */
-body {
-    margin: 0;
-    font-family: "Times New Roman", serif;
-    background: #B2EBF2;
-    min-height: 100vh;
-    overflow-x: hidden;
-    transition: background 0.4s;
-}
+    /* ================= BODY ================= */
+    body {
+        margin: 0;
+        font-family: "Times New Roman", serif;
+        background: #B2EBF2;
+        min-height: 100vh;
+        overflow-x: hidden;
+        transition: background 0.6s ease;
+    }
 
-body.dark { background: #1e2633; color: white; }
+    body.dark {
+        background: #1e2633;
+        color: white;
+    }
 
-/* CLOUDS */
-.cloud {
-    position: fixed;
-    top: 0;
-    left: 0;
-    opacity: 0.25;
-    z-index: 0;
-    animation: float 60s linear infinite;
-}
-.cloud img { width: 220px; }
-@keyframes float { from { transform: translateX(-300px); } to { transform: translateX(120vw); } }
+    /* ================= CLOUDS ================= */
+    .cloud {
+        position: fixed;
+        top: 0;
+        left: 0;
+        opacity: 0.25;
+        z-index: 0;
+        animation: float linear infinite;
+    }
 
-/* MAIN CONTENT */
-#main_container {
-    position: relative;
-    z-index: 1;
-    text-align: center;
-    margin-top: 140px;
-    transition: filter 0.3s;
-    color: #FF6F61;
-}
-h1 { font-size: 48px; margin-bottom: 10px; }
-.subtitle { font-size: 18px; margin-bottom: 20px; }
-#greeting { margin-bottom: 30px; font-style: italic; }
+    .cloud img {
+        width: 220px;
+        transition: transform 0.6s ease;
+    }
 
-/* BUTTONS */
-button {
-    padding: 14px 30px;
-    margin: 10px;
-    font-size: 16px;
-    border: none;
-    border-radius: 30px;
-    cursor: pointer;
-    transition: 0.3s;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.15);
-}
-#createAccountButton { background: #FFB6C1; }
-#signInButton { background: #FFD54F; }
-#chatButton { background: #87CEFA; }
-button:hover { transform: translateY(-3px); }
+    .cloud:nth-child(1) { animation-duration: 60s; top: 80px; }
+    .cloud:nth-child(2) { animation-duration: 90s; top: 320px; }
+    .cloud:nth-child(3) { animation-duration: 80s; top: 520px; }
 
-/* SETTINGS BUTTON */
-#settings_button {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    border: none;
-    cursor: pointer;
-    overflow: hidden;
-    box-shadow: 0 5px 20px rgba(0,0,0,0.2);
-    z-index: 2;
-    padding: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: transparent;
-}
-#settings_button img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    border-radius: 50%;
-}
+    @keyframes float {
+        from { transform: translateX(-300px); }
+        to { transform: translateX(120vw); }
+    }
 
-/* SIDEBAR */
-#settings_panel {
-    position: fixed;
-    top: 0;
-    right: 0;
-    width: 270px;
-    height: 100%;
-    background: white;
-    padding: 25px;
-    box-shadow: -5px 0 20px rgba(0,0,0,0.2);
-    transform: translateX(100%);
-    transition: transform 0.35s ease;
-    overflow-y: auto;
-    z-index: 3;
-}
-body.dark #settings_panel { background: #2b3446; }
-#settings_panel.active { transform: translateX(0); }
+    /* ================= MAIN CONTENT ================= */
+    #main_container {
+        position: relative;
+        z-index: 1;
+        text-align: center;
+        padding: 120px 20px 40px 20px;
+        transition: filter 0.3s;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 20px;
+    }
 
-/* SIDEBAR ITEMS */
-.sidebar-item {
-    padding: 12px 0;
-    cursor: pointer;
-    font-size: 17px;
-    border-bottom: 1px solid rgba(0,0,0,0.1);
-}
-.sidebar-item:hover { opacity: 0.7; }
-.sidebar-section { margin-top: 18px; }
-.sidebar-section label { font-size: 14px; display: block; margin-bottom: 6px; }
-.sidebar-section input[type="text"] {
-    width: 100%; padding: 8px; border-radius: 8px; border: 1px solid #ccc;
-}
+    h1 {
+        font-size: 56px;
+        margin-bottom: 10px;
+        letter-spacing: 1px;
+        color: #FF6F61;
+    }
 
-/* DARK TOGGLE */
-.switch { position: relative; display: inline-block; width: 50px; height: 26px; }
-.switch input { opacity: 0; width: 0; height: 0; }
-.slider { position: absolute; cursor: pointer; top:0; left:0; right:0; bottom:0; background:#ccc; transition:.4s; border-radius:26px; }
-.slider:before { position:absolute; content:""; height:20px; width:20px; left:3px; bottom:3px; background:white; transition:.4s; border-radius:50%; }
-input:checked + .slider { background:#4CAF50; }
-input:checked + .slider:before { transform: translateX(24px); }
+    .subtitle {
+        font-size: 20px;
+        margin-bottom: 20px;
+        line-height: 1.5;
+        color: #333;
+    }
 
-/* COLOR PICKER */
-.color-picker { width:100%; height:35px; border:none; border-radius:8px; cursor:pointer; }
+    body.dark .subtitle { color: #ccc; }
 
-/* BLUR ON SIDEBAR */
-.blur { filter: blur(5px); }
+    #greeting {
+        font-style: italic;
+        font-size: 22px;
+        margin-bottom: 30px;
+        color: #555;
+    }
 
-/* CLOSE & SAVE BUTTON */
-#saveSettings {
-    margin-top: 25px; width:100%; padding:12px;
-    border:none; border-radius:30px; font-size:15px;
-    background: rgba(255,255,255,0.6); backdrop-filter: blur(8px);
-    cursor:pointer; box-shadow:0 4px 12px rgba(0,0,0,0.15); transition:0.25s;
-}
-#saveSettings:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(0,0,0,0.2); }
-body.dark #saveSettings { background: rgba(60,70,90,0.7); color:white; }
+    body.dark #greeting { color: #eee; }
 
+    /* ================= BUTTONS ================= */
+    .btn {
+        padding: 16px 36px;
+        margin: 10px 0;
+        font-size: 18px;
+        border: none;
+        border-radius: 50px;
+        cursor: pointer;
+        transition: transform 0.3s, box-shadow 0.3s, background 0.3s;
+        box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+        font-weight: bold;
+    }
+
+    .btn:hover {
+        transform: translateY(-4px) scale(1.02);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+    }
+
+    #createAccountButton { background: linear-gradient(135deg, #FFB6C1, #FF8FA3); color: white; }
+    #signInButton { background: linear-gradient(135deg, #FFD54F, #FFC107); color: white; }
+    #chatButton { background: linear-gradient(135deg, #87CEFA, #00BFFF); color: white; }
+
+    /* ================= SETTINGS BUTTON ================= */
+    #settings_button {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        border: none;
+        cursor: pointer;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+        z-index: 2;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: transparent;
+        transition: transform 0.3s;
+    }
+
+    #settings_button:hover { transform: scale(1.1); }
+
+    #settings_button img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 50%;
+    }
+
+    /* ================= SIDEBAR ================= */
+    #settings_panel {
+        position: fixed;
+        top: 0;
+        right: 0;
+        width: 280px;
+        height: 100%;
+        background: rgba(255,255,255,0.95);
+        backdrop-filter: blur(12px);
+        padding: 25px;
+        box-shadow: -5px 0 20px rgba(0,0,0,0.2);
+        transform: translateX(100%);
+        transition: transform 0.4s ease;
+        overflow-y: auto;
+        z-index: 3;
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    body.dark #settings_panel {
+        background: rgba(40,50,70,0.95);
+    }
+
+    #settings_panel.active { transform: translateX(0); }
+
+    .sidebar-item {
+        padding: 12px 0;
+        cursor: pointer;
+        font-size: 17px;
+        border-bottom: 1px solid rgba(0,0,0,0.1);
+        transition: 0.25s;
+    }
+
+    .sidebar-item:hover { opacity: 0.7; }
+
+    .sidebar-section {
+        margin-top: 15px;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .sidebar-section label { font-size: 14px; }
+
+    .sidebar-section input[type="text"],
+    .color-picker {
+        width: 100%;
+        padding: 10px;
+        border-radius: 12px;
+        border: 1px solid #ccc;
+        font-size: 16px;
+        transition: box-shadow 0.3s;
+    }
+
+    .sidebar-section input[type="text"]:focus,
+    .color-picker:focus { box-shadow: 0 0 10px rgba(0,0,0,0.2); outline: none; }
+
+    /* ================= DARK TOGGLE ================= */
+    .switch { position: relative; display: inline-block; width: 50px; height: 26px; }
+    .switch input { opacity: 0; width: 0; height: 0; }
+    .slider {
+        position: absolute;
+        cursor: pointer;
+        top:0; left:0; right:0; bottom:0;
+        background:#ccc; transition:.4s; border-radius:26px;
+    }
+    .slider:before {
+        position:absolute; content:""; height:20px; width:20px;
+        left:3px; bottom:3px; background:white; transition:.4s; border-radius:50%;
+    }
+    input:checked + .slider { background:#4CAF50; }
+    input:checked + .slider:before { transform: translateX(24px); }
+
+    /* ================= BLUR WHEN SIDEBAR OPEN ================= */
+    .blur { filter: blur(6px); }
+
+    /* ================= CLOSE BUTTON ================= */
+    #saveSettings {
+        margin-top: 20px;
+        padding: 14px;
+        border: none;
+        border-radius: 30px;
+        font-size: 16px;
+        font-weight: bold;
+        background: rgba(255,255,255,0.7);
+        backdrop-filter: blur(8px);
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        transition: transform 0.25s, box-shadow 0.25s;
+    }
+
+    #saveSettings:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 18px rgba(0,0,0,0.25);
+    }
+
+    body.dark #saveSettings {
+        background: rgba(60,70,90,0.7);
+        color: white;
+    }
 </style>
 </head>
 <body>
+    <!-- CLOUDS -->
+    <div class="cloud"><img src="cloud.png" alt="Cloud"></div>
+    <div class="cloud"><img src="cloud.png" alt="Cloud"></div>
+    <div class="cloud"><img src="cloud.png" alt="Cloud"></div>
 
-<!-- CLOUDS -->
-<div class="cloud" style="top:80px;"><img src="cloud.png"></div>
-<div class="cloud" style="top:320px; animation-duration:90s;"><img src="cloud.png"></div>
-<div class="cloud" style="top:520px; animation-duration:80s;"><img src="cloud.png"></div>
+    <!-- MAIN CONTENT -->
+    <div id="main_container">
+        <h1>YouMatter</h1>
+        <p class="subtitle">Your friendly AI mental health companion</p>
 
-<!-- MAIN CONTENT -->
-<div id="main_container">
-    <h1>YouMatter</h1>
-    <h2>Your mind's quiet companion</h2>
-    <center></center><p class="subtitle">Life can be loud, but your mind deserves space to breathe. YouMatter walks with you through shadows and light, offering support, understanding, and a gentle hand whenever you need it.</p></center>
+       <center><p class="subtitle">Life can be loud, but your mind deserves space to breathe. YouMatter walks with you through shadows and light, offering support, understanding, and a gentle hand whenever you need it.</p></center>
     <p id="greeting"></p>
-    <p>Here...every thought matters. Every feeling counts.</p>
-    <button id="createAccountButton">Create Account</button><br>
-    <button id="signInButton">Sign In</button><br>
-    <button id="chatButton">Chat with AI Companion</button>
-</div>
-
-<!-- SETTINGS BUTTON -->
-<button id="settings_button"><img src="pfp24.jpg" alt="Settings Icon"></button>
-
-<!-- SIDEBAR -->
-<div id="settings_panel">
-    <h3>Settings</h3>
-    <div class="sidebar-item" onclick="goTo('account.html')">Account information</div>
-    <div class="sidebar-item" onclick="goTo('profile.html')">Edit profile</div>
-    <div class="sidebar-item">AI companion name</div>
-    <div class="sidebar-section">
-        <input type="text" id="aiNameInput" placeholder="Enter AI name">
+    <p>Here...every thought matters. Every feeling counts.</p></center>
+        <button id="createAccountButton" class="btn">Create Account</button>
+        <button id="signInButton" class="btn">Sign In</button>
+        <button id="chatButton" class="btn">Chat with AI Companion</button>
     </div>
-    <div class="sidebar-item" onclick="goTo('updates.html')">Updates</div>
-    <div class="sidebar-item" onclick="goTo('regulation.html')">Regulation</div>
-    <div class="sidebar-item" onclick="goTo('relaxation.html')">Relaxation exercises</div>
-    <div class="sidebar-section">
-        <label>Dark Theme</label>
-        <label class="switch">
-            <input type="checkbox" id="darkToggle">
-            <span class="slider"></span>
-        </label>
+
+    <!-- SETTINGS BUTTON -->
+    <button id="settings_button"><img src="pfp24.jpg" alt="Settings Icon"></button>
+
+    <!-- SIDEBAR -->
+    <div id="settings_panel">
+        <h3>Settings</h3>
+        <div class="sidebar-item" onclick="goTo('account.html')">Account information</div>
+        <div class="sidebar-item" onclick="goTo('profile.html')">Edit profile</div>
+        <div class="sidebar-item">AI companion name</div>
+        <div class="sidebar-section">
+            <input type="text" id="aiNameInput" placeholder="Enter AI name">
+        </div>
+        <div class="sidebar-item" onclick="goTo('updates.html')">Updates</div>
+        <div class="sidebar-item" onclick="goTo('regulation.html')">Regulation</div>
+        <div class="sidebar-item" onclick="goTo('relaxation.html')">Relaxation exercises</div>
+        <div class="sidebar-section">
+            <label>Dark Theme</label>
+            <label class="switch"><input type="checkbox" id="darkToggle"><span class="slider"></span></label>
+        </div>
+        <div class="sidebar-section">
+            <label>Background Color</label>
+            <input type="color" id="bgColor" class="color-picker">
+        </div>
+        <button id="saveSettings">Close & Save</button>
     </div>
-    <div class="sidebar-section">
-        <label>Background Color</label>
-        <input type="color" id="bgColor" class="color-picker">
-    </div>
-    <button id="saveSettings">Close & Save</button>
-</div>
 
-<script>
-const settingsBtn = document.getElementById("settings_button");
-const settingsPanel = document.getElementById("settings_panel");
-const mainContainer = document.getElementById("main_container");
-const darkToggle = document.getElementById("darkToggle");
-const bgColor = document.getElementById("bgColor");
-const aiNameInput = document.getElementById("aiNameInput");
-const greeting = document.getElementById("greeting");
-const saveSettings = document.getElementById("saveSettings");
+    <script>
+        const settingsBtn = document.getElementById("settings_button");
+        const settingsPanel = document.getElementById("settings_panel");
+        const mainContainer = document.getElementById("main_container");
+        const darkToggle = document.getElementById("darkToggle");
+        const bgColor = document.getElementById("bgColor");
+        const aiNameInput = document.getElementById("aiNameInput");
+        const greeting = document.getElementById("greeting");
+        const saveSettings = document.getElementById("saveSettings");
+        const createAccountButton = document.getElementById("createAccountButton");
+        const signInButton = document.getElementById("signInButton");
+        const chatButton = document.getElementById("chatButton");
 
-const createAccountButton = document.getElementById("createAccountButton");
-const signInButton = document.getElementById("signInButton");
-const chatButton = document.getElementById("chatButton");
+        // Toggle sidebar
+        settingsBtn.onclick = () => {
+            settingsPanel.classList.toggle("active");
+            mainContainer.classList.toggle("blur");
+        }
 
-// Toggle sidebar
-settingsBtn.onclick = () => {
-    settingsPanel.classList.toggle("active");
-    mainContainer.classList.toggle("blur");
-}
+        // Navigation
+        function goTo(page){ window.location.href = page; }
+        createAccountButton.onclick = () => goTo("sign_up.html");
+        signInButton.onclick = () => goTo("sign_in.html");
+        chatButton.onclick = () => goTo("chatbot.html");
 
-// Navigation
-function goTo(page){ window.location.href = page; }
-createAccountButton.onclick = () => { window.location.href = "sign_up.html"; }
-signInButton.onclick = () => { window.location.href = "sign_in.html"; }
-chatButton.onclick = () => { window.location.href = "chatbot.html"; }
+        // Background color & dark mode
+        const savedColor = localStorage.getItem("bgColor") || "#B2EBF2";
+        document.body.style.backgroundColor = savedColor;
+        bgColor.value = savedColor;
 
-// Dark mode & background
-const savedColor = localStorage.getItem("bgColor") || "#B2EBF2";
-document.body.style.backgroundColor = savedColor;
-bgColor.value = savedColor;
-bgColor.oninput = e => { document.body.style.backgroundColor = e.target.value; localStorage.setItem("bgColor", e.target.value); }
+        bgColor.oninput = e => {
+            document.body.style.backgroundColor = e.target.value;
+            localStorage.setItem("bgColor", e.target.value);
+        }
 
-if(localStorage.getItem("darkMode") === "on"){ document.body.classList.add("dark"); darkToggle.checked=true; }
-darkToggle.addEventListener("change",()=>{ 
-    if(darkToggle.checked){ document.body.classList.add("dark"); localStorage.setItem("darkMode","on"); }
-    else{ document.body.classList.remove("dark"); localStorage.setItem("darkMode","off"); }
-});
+        if(localStorage.getItem("darkMode") === "on"){
+            document.body.classList.add("dark");
+            darkToggle.checked = true;
+        }
 
-// AI Name
-if(localStorage.getItem("aiName")){ aiNameInput.value=localStorage.getItem("aiName"); greeting.textContent="Your AI companion: "+aiNameInput.value; }
-aiNameInput.addEventListener("input",e=>{ localStorage.setItem("aiName",e.target.value); greeting.textContent="Your AI companion: "+e.target.value; });
+        darkToggle.addEventListener("change", () => {
+            if(darkToggle.checked){
+                document.body.classList.add("dark");
+                localStorage.setItem("darkMode","on");
+            } else{
+                document.body.classList.remove("dark");
+                localStorage.setItem("darkMode","off");
+            }
+        });
 
-// Close sidebar
-saveSettings.onclick = () => { settingsPanel.classList.remove("active"); mainContainer.classList.remove("blur"); }
-</script>
+        // AI Name
+        if(localStorage.getItem("aiName")){
+            aiNameInput.value = localStorage.getItem("aiName");
+            greeting.textContent = "Your AI companion: " + aiNameInput.value;
+        }
 
+        aiNameInput.addEventListener("input", e => {
+            localStorage.setItem("aiName", e.target.value);
+            greeting.textContent = "Your AI companion: " + e.target.value;
+        });
+
+        // Close sidebar
+        saveSettings.onclick = () => {
+            settingsPanel.classList.remove("active");
+            mainContainer.classList.remove("blur");
+        }
+    </script>
 </body>
 </html>
