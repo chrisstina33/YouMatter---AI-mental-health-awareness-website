@@ -30,29 +30,32 @@ body.dark { background: #1e2633; color: white; }
 @keyframes float { from { transform: translateX(-300px); } to { transform: translateX(120vw); } }
 
 /* SETTINGS BUTTON */
-#settings_button {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    border: none;
-    cursor: pointer;
-    overflow: hidden;
-    box-shadow: 0 5px 20px rgba(0,0,0,0.2);
-    z-index: 4;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: transparent;
-}
-#settings_button img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    border-radius: 50%;
-}
+ #settings_button {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        border: none;
+        cursor: pointer;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+        z-index: 2;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: transparent;
+        transition: transform 0.3s;
+    }
+
+    #settings_button:hover { transform: scale(1.1); }
+
+    #settings_button img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 50%;
+    }
 
 /* SIDEBAR */
 #settings_panel {
