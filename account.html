@@ -1,86 +1,499 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="en">
 <head>
-
-<title>Your Account</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>YouMatter – Account</title>
 
 <style>
 
+:root{
+--primary:#4a90e2;
+--accent:#4CAF50;
+--text:#2c3e50;
+--card:#ffffff;
+--radius:20px;
+--shadow:0 10px 30px rgba(0,0,0,0.08);
+--safe-top:env(safe-area-inset-top,34px);
+--safe-bottom:env(safe-area-inset-bottom,20px);
+}
+
+*{
+box-sizing:border-box;
+-webkit-tap-highlight-color:transparent;
+}
+
 body{
 margin:0;
-font-family:"Times New Roman";
-background:#B2EBF2;
+font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;
+min-height:100vh;
 display:flex;
-justify-content:center;
 align-items:center;
-height:100vh;
+justify-content:center;
+background:linear-gradient(135deg,#e0f2f1 0%,#fce4ec 100%);
+color:var(--text);
+transition:background .3s;
+user-select:none;
 }
 
-#account_container{
+/* APP CONTAINER */
 
-background:white;
+#app-container{
+width:min(92vw,700px);
+max-height:92vh;
+background:rgba(255,255,255,0.7);
+backdrop-filter:blur(15px);
+border-radius:var(--radius);
+box-shadow:var(--shadow);
+overflow-y:auto;
+padding:2rem;
+position:relative;
+transition:.3s;
+}
 
-padding:40px;
+#app-container.blur{
+filter:blur(5px);
+}
 
-border-radius:14px;
+/* HEADER */
 
-width:400px;
-
+header{
 text-align:center;
-
-box-shadow:0 8px 20px rgba(0,0,0,0.2);
-
+margin-bottom:30px;
 }
 
-#pfp{
+h1{
+font-size:2.4rem;
+margin:0;
+background:linear-gradient(45deg,#4a90e2,#8e44ad);
+-webkit-background-clip:text;
+-webkit-text-fill-color:transparent;
+}
 
-width:120px;
-height:120px;
+.subtitle{
+opacity:.7;
+margin-top:5px;
+}
 
+/* PROFILE */
+
+.pfp-wrapper{
+width:140px;
+height:140px;
+margin:25px auto;
 border-radius:50%;
-
-object-fit:cover;
-
-margin-bottom:20px;
-
+padding:5px;
+background:linear-gradient(45deg,var(--accent),var(--primary));
 }
 
-.info{
-margin:10px 0;
-font-size:18px;
+#pfp_display{
+width:100%;
+height:100%;
+border-radius:50%;
+overflow:hidden;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:3rem;
+background:#eee;
+border:4px solid white;
+}
+
+#pfp_display img{
+width:100%;
+height:100%;
+object-fit:cover;
+}
+
+/* INFO BLOCKS */
+
+.info-group{
+margin:12px 0;
+padding:12px;
+border-radius:12px;
+background:rgba(0,0,0,0.04);
+}
+
+.info-label{
+font-size:.75rem;
+opacity:.6;
+text-transform:uppercase;
+letter-spacing:1px;
+}
+
+.info-value{
+font-weight:600;
+font-size:1.1rem;
+}
+
+/* BUTTON */
+
+#chatButton{
+width:100%;
+margin-top:20px;
+padding:15px;
+border:none;
+border-radius:16px;
+font-size:1.1rem;
+background:var(--accent);
+color:white;
+cursor:pointer;
+box-shadow:0 4px 15px rgba(0,0,0,0.2);
+}
+
+/* SETTINGS BUTTON */
+
+#settings_button{
+position:fixed;
+top:20px;
+right:20px;
+width:60px;
+height:60px;
+border-radius:50%;
+border:none;
+cursor:pointer;
+overflow:hidden;
+box-shadow:0 5px 20px rgba(0,0,0,0.2);
+z-index:10;
+padding:0;
+display:flex;
+align-items:center;
+justify-content:center;
+background:transparent;
+}
+
+#settings_button img{
+width:100%;
+height:100%;
+object-fit:cover;
+border-radius:50%;
+}
+
+/* SIDEBAR */
+
+#settings_panel{
+position:fixed;
+top:0;
+right:0;
+width:270px;
+height:100%;
+background:white;
+padding:25px;
+box-shadow:-5px 0 20px rgba(0,0,0,0.2);
+transform:translateX(100%);
+transition:transform .35s ease;
+overflow-y:auto;
+z-index:11;
+}
+
+#settings_panel.active{
+transform:translateX(0);
+}
+
+body.dark #settings_panel{
+background:#2b3446;
+color:white;
+}
+
+.sidebar-item{
+padding:12px 0;
+cursor:pointer;
+font-size:17px;
+border-bottom:1px solid rgba(0,0,0,0.1);
+}
+
+.sidebar-item:hover{
+opacity:.7;
+}
+
+.sidebar-section{
+margin-top:18px;
+}
+
+.sidebar-section label{
+font-size:14px;
+display:block;
+margin-bottom:6px;
+}
+
+.sidebar-section input[type="text"]{
+width:100%;
+padding:8px;
+border-radius:8px;
+border:1px solid #ccc;
+}
+
+/* DARK SWITCH */
+
+.switch{
+position:relative;
+display:inline-block;
+width:50px;
+height:26px;
+}
+
+.switch input{
+opacity:0;
+width:0;
+height:0;
+}
+
+.slider{
+position:absolute;
+cursor:pointer;
+top:0;
+left:0;
+right:0;
+bottom:0;
+background:#ccc;
+transition:.4s;
+border-radius:26px;
+}
+
+.slider:before{
+position:absolute;
+content:"";
+height:20px;
+width:20px;
+left:3px;
+bottom:3px;
+background:white;
+transition:.4s;
+border-radius:50%;
+}
+
+input:checked + .slider{
+background:#4CAF50;
+}
+
+input:checked + .slider:before{
+transform:translateX(24px);
+}
+
+/* COLOR PICKER */
+
+.color-picker{
+width:100%;
+height:35px;
+border:none;
+border-radius:8px;
+cursor:pointer;
+}
+
+/* CLOSE BUTTON */
+
+#saveSettings{
+margin-top:25px;
+width:100%;
+padding:12px;
+border:none;
+border-radius:30px;
+font-size:15px;
+background:rgba(255,255,255,0.6);
+backdrop-filter:blur(8px);
+cursor:pointer;
+box-shadow:0 4px 12px rgba(0,0,0,0.15);
+}
+
+/* DARK MODE */
+
+body.dark{
+background:#1e2633;
+color:#e6edf3;
+}
+
+body.dark #app-container{
+background:#1f2735;
+}
+
+body.dark .info-group{
+background:rgba(255,255,255,0.05);
 }
 
 </style>
-
 </head>
 
 <body>
 
-<div id="account_container">
+<button id="settings_button">
+<img src="pfp24.jpg">
+</button>
 
-<img id="pfp" src="images/pfp24.jpg">
+<!-- SETTINGS SIDEBAR -->
+    <div id="settings_panel">
+        <h3>Settings</h3>
+        <div class="sidebar-item" onclick="goTo('account.html')">Account information</div>
+        <div class="sidebar-item" onclick="goTo('profile.html')">Edit profile</div>
+        <div class="sidebar-item">AI companion name</div>
+        <div class="sidebar-section">
+            <input type="text" id="aiNameInput" placeholder="Enter AI name">
+        </div>
+        <div class="sidebar-item" onclick="goTo('updates.html')">Updates</div>
+        <div class="sidebar-item" onclick="goTo('regulation.html')">Regulation</div>
+        <div class="sidebar-item" onclick="goTo('relaxation.html')">Relaxation exercises</div>
+        <div class="sidebar-section">
+            <label>Dark Theme</label>
+            <label class="switch">
+                <input type="checkbox" id="darkToggle">
+                <span class="slider"></span>
+            </label>
+        </div>
+        <div class="sidebar-section">
+            <label>Background Color</label>
+            <input type="color" id="bgColor" class="color-picker">
+        </div>
+        <button id="saveSettings">Close & Save</button>
+    </div>
+</div>
 
-<h2 id="user_name">User</h2>
+<!-- MAIN APP -->
 
-<div class="info" id="user_email"></div>
+<div id="app-container">
 
-<div class="info" id="member_since"></div>
+<header>
+<h1>YouMatter</h1>
+<p class="subtitle">Your AI mental health companion</p>
+</header>
 
-<div class="info">Membership: Standard</div>
+<div class="pfp-wrapper">
+<div id="pfp_display">
+<span id="pfp_placeholder">🖼️</span>
+</div>
+</div>
+
+<h2 id="display_user_name">User</h2>
+<p id="display_ai_greeting">Your AI companion: Buddy</p>
+
+<div class="info-group">
+<div class="info-label">Email</div>
+<div class="info-value" id="user_email">user@example.com</div>
+</div>
+
+<div class="info-group">
+<div class="info-label">Member since</div>
+<div class="info-value" id="member_since">2024</div>
+</div>
+
+<button id="chatButton">💬 Chat with AI companion</button>
 
 </div>
 
 <script>
 
-const email = localStorage.getItem("userEmail");
+/* ELEMENTS */
 
-document.getElementById("user_email").innerText = "Email: " + email;
+const settingsBtn=document.getElementById("settings_button");
+const settingsPanel=document.getElementById("settings_panel");
+const appContainer=document.getElementById("app-container");
 
-const today = new Date().toLocaleDateString();
+const darkToggle=document.getElementById("darkToggle");
+const bgColor=document.getElementById("bgColor");
+const aiNameInput=document.getElementById("aiNameInput");
 
-document.getElementById("member_since").innerText =
-"Member since: " + today;
+const saveSettings=document.getElementById("saveSettings");
+
+const greeting=document.getElementById("display_ai_greeting");
+const email=document.getElementById("user_email");
+const memberSince=document.getElementById("member_since");
+
+/* SIDEBAR */
+
+settingsBtn.onclick=()=>{
+settingsPanel.classList.toggle("active");
+appContainer.classList.toggle("blur");
+}
+
+saveSettings.onclick=()=>{
+settingsPanel.classList.remove("active");
+appContainer.classList.remove("blur");
+}
+
+/* NAVIGATION */
+
+function goTo(url){
+window.location.href=url;
+}
+
+/* DARK MODE */
+
+if(localStorage.getItem("darkMode")==="on"){
+document.body.classList.add("dark");
+darkToggle.checked=true;
+}
+
+darkToggle.addEventListener("change",()=>{
+
+if(darkToggle.checked){
+document.body.classList.add("dark");
+localStorage.setItem("darkMode","on");
+}else{
+document.body.classList.remove("dark");
+localStorage.setItem("darkMode","off");
+}
+
+});
+
+/* BACKGROUND COLOR */
+
+const savedColor=localStorage.getItem("bgColor")||"#B2EBF2";
+document.body.style.backgroundColor=savedColor;
+bgColor.value=savedColor;
+
+bgColor.oninput=e=>{
+document.body.style.backgroundColor=e.target.value;
+localStorage.setItem("bgColor",e.target.value);
+}
+
+/* AI NAME */
+
+if(localStorage.getItem("aiName")){
+aiNameInput.value=localStorage.getItem("aiName");
+greeting.textContent="Your AI companion: "+aiNameInput.value;
+}
+
+aiNameInput.addEventListener("input",e=>{
+localStorage.setItem("aiName",e.target.value);
+greeting.textContent="Your AI companion: "+e.target.value;
+});
+
+/* PROFILE DATA */
+
+/* LOAD USER EMAIL */
+
+const storedEmail = localStorage.getItem("userEmail");
+
+if(storedEmail){
+email.textContent = storedEmail;
+}else{
+email.textContent = "No account logged in";
+}
+
+/* LOAD MEMBER SINCE */
+
+const storedDate = localStorage.getItem("memberSince");
+
+if(storedDate){
+
+const date = new Date(storedDate);
+
+const formattedDate = date.toLocaleDateString("en-US",{
+year:"numeric",
+month:"long",
+day:"numeric"
+});
+
+memberSince.textContent = formattedDate;
+
+}else{
+
+memberSince.textContent = "Unknown";
+
+}
+/* CHAT BUTTON */
+
+document.getElementById("chatButton").onclick=()=>{
+window.location.href="chatbot.html";
+};
 
 </script>
 
