@@ -632,6 +632,112 @@ function getContrastColor(bgColor) {
 function goTo(url){
     window.location.href = url;
 }
+
+      // Breathing Tool Logic
+    let breathingInterval;
+    let isBreathing = false;
+    const circle = document.getElementById('breathCircle');
+    const label = document.getElementById('breathLabel');
+    const btn = document.getElementById('startBreathBtn');
+
+    function toggleBreathing() {
+        if (isBreathing) {
+            stopBreathing();
+        } else {
+            startBreathing();
+        }
+    }
+
+    function startBreathing() {
+        isBreathing = true;
+        btn.innerText = "Stop Exercise";
+        runBreathCycle();
+        breathingInterval = setInterval(runBreathCycle, 12000); // 6s in, 6s out
+    }
+
+    function stopBreathing() {
+        isBreathing = false;
+        clearInterval(breathingInterval);
+        circle.classList.remove('expand');
+        label.innerText = "Ready?";
+        btn.innerText = "Start Breathing Exercise";
+    }
+
+    function runBreathCycle() {
+        if (!isBreathing) return;
+        
+        // Inhale
+        label.innerText = "Inhale... (6s)";
+        circle.classList.add('expand');
+        
+        setTimeout(() => {
+            if (!isBreathing) return;
+            // Exhale
+            label.innerText = "Exhale... (6s)";
+            circle.classList.remove('expand');
+        }, 6000);
+    }
+
+    // Local Storage & Persistence
+    const APP_STORAGE_KEY = 'FREQUENCY_APP_LOGS';
+    window.APP_STORAGE_KEY = APP_STORAGE_KEY;
+
+    function logPractice(type) {
+        const logs = getLogs();
+        const newEntry = {
+            id: Date.now(),
+            type: type,
+            time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+            date: new Date().toLocaleDateString()
+        };
+        logs.unshift(newEntry);
+        if (logs.length > 5) logs.pop(); // Keep only last 5
+        saveLogs(logs);
+        renderLogs();
+    }
+
+    function getLogs() {
+        const saved = localStorage.getItem(APP_STORAGE_KEY + '_data');
+        return saved ? JSON.parse(saved) : [];
+    }
+
+    function saveLogs(data) {
+        localStorage.setItem(APP_STORAGE_KEY + '_data', JSON.stringify(data));
+    }
+
+    function renderLogs() {
+        const container = document.getElementById('logContainer');
+        const logs = getLogs();
+        
+        if (logs.length === 0) {
+            container.innerHTML = '<p style="opacity: 0.5; font-style: italic;">No logs yet. Start practicing!</p>';
+            return;
+        }
+
+        container.innerHTML = logs.map(log => `
+            <div class="log-entry">
+                <span>${log.type === 'Breathing' ? '🌬️' : '⚡'} ${log.type} Practice</span>
+                <span style="font-size: 0.8rem; opacity: 0.7;">${log.date} ${log.time}</span>
+            </div>
+        `).join('');
+    }
+
+    function clearLogs() {
+        localStorage.removeItem(APP_STORAGE_KEY + '_data');
+        renderLogs();
+    }
+
+    // Initialize
+    window.addEventListener('load', () => {
+        renderLogs();
+    });
+
+    // Focus management for Android WebView safety
+    document.addEventListener("focusin", function(e) {
+        if (e.target.tagName === "INPUT" && e.target.type !== "text") {
+            setTimeout(() => e.target.blur(), 100);
+        }
+    });
 </script>
 
 </body>
