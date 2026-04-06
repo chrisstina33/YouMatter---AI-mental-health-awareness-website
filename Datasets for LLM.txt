@@ -1,0 +1,249 @@
+Datasets for LLM
+
+1. Psychological State Identifier
+https://www.kaggle.com/code/farganaasadova/psychological-state-identification-eda?scriptVersionId=248809002&cellId=1
+Code:
+# This Python 3 environment comes with many helpful analytics libraries installed
+# It is defined by the kaggle/python Docker image: https://github.com/kaggle/docker-python
+# For example, here's several helpful packages to load
+
+import numpy as np # linear algebra
+import pandas as pd # data processing, CSV file I/O (e.g. pd.read_csv)
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+import plotly.express as px
+from matplotlib.colors import LinearSegmentedColormap
+
+# Input data files are available in the read-only "../input/" directory
+# For example, running this (by clicking run or pressing Shift+Enter) will list all files under the input directory
+
+import os
+for dirname, _, filenames in os.walk('kaggle/input/psychological-state-identification-dataset/psychological_state_dataset.csv'):
+    for filename in filenames:
+        print(os.path.join(dirname, filename))
+
+# You can write up to 20GB to the current directory (/kaggle/working/) that gets preserved as output when you create a version using "Save & Run All" 
+# You can also write temporary files to /kaggle/temp/, but they won't be saved outside of the current session
+
+df = pd.read_csv("/kaggle/input/psychological-state-identification-dataset/psychological_state_dataset.csv")
+print(df.head())
+print(df.info())
+
+df.rename(columns={'GSR (μS)': 'GSR', 'HRV (ms)': 'HRV', 'Blood Pressure (mmHg)': 'Blood Pressure', 'Oxygen Saturation (%)': 'Oxygen Saturation',
+                      'Heart Rate (BPM)': 'Heart Rate', 'Ambient Noise (dB)': 'Ambient Noise', 'Respiration Rate (BPM)': 'Respiration Rate',
+                      'Skin Temp (°C)': 'Skin Temp', 'Focus Duration (s)': 'Focus Duration'}, inplace=True)
+print("missing values" )
+# Check for missing values
+print(df.isnull().sum())
+
+
+TRICK : HUGGING FACE 
+curl -X GET \
+     "https://datasets-server.huggingface.co/rows?dataset=jkhedri%2Fpsychology-dataset&config=default&split=train&offset=0&length=100"
+
+OTHER LINKS:
+https://www.statista.com/statistics/681253/us-children-living-with-single-divorced-parents-by-family-income/
+https://datasearch.gesis.org/detail?q=httpservices.fsd.uta.fioai--oaifsd.uta.fiFSD3110e
+https://data.ko.virginia.gov/dataset/correlates-of-lifetime-exposure-to-one-or-more-potentially-traumatic-events-and-subse-2008-2012
+https://www.statista.com/statistics/1366928/us-state-of-breakup/
+
+
+
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+from tqdm import tqdm 
+import random
+import string
+import re
+import nltk
+
+nltk.download('stopwords')
+nltk.download('words')
+nltk.download('punkt')
+
+from nltk.corpus import stopwords
+from nltk.stem import WordNetLemmatizer
+from nltk.stem.porter import PorterStemmer
+from nltk.corpus import words
+
+
+import warnings
+warnings.filterwarnings("ignore")
+def find_outliers_iqr(data, feature_column):
+    """
+    Find outliers in a given feature using the IQR method.
+
+    Parameters:
+    - data: pandas DataFrame
+    - feature_column: str, the name of the column containing the feature
+
+    Returns:
+    - outliers: pandas DataFrame containing outliers
+    """
+
+    # Select the specified feature column
+    feature_values = data[feature_column]
+
+    # Calculate the first and third quartiles (Q1 and Q3)
+    Q1 = feature_values.quantile(0.25)
+    Q3 = feature_values.quantile(0.75)
+
+    # Calculate the IQR (Interquartile Range)
+    IQR = Q3 - Q1
+
+    # Define the lower and upper bounds for outliers
+    lower_bound = Q1 - 1.5 * IQR
+    upper_bound = Q3 + 1.5 * IQR
+
+    # Find outliers
+    outliers = data[(feature_values < lower_bound) | (feature_values > upper_bound)]
+    
+    print(f"Outliers ratio is {round(len(outliers)/len(data), 2)}")
+    print(f"Low bound is {lower_bound}")
+    print(f"Upper bound is {upper_bound}")
+    
+    return outliers
+def clean_emojis(text):
+    # Remove emojis using regular expression
+    emoji_pattern = re.compile("["
+        u"\U0001F600-\U0001F64F"  # emoticons
+        u"\U0001F300-\U0001F5FF"  # symbols & pictographs
+        u"\U0001F680-\U0001F6FF"  # transport & map symbols
+        u"\U0001F700-\U0001F77F"  # alchemical symbols
+        u"\U0001F780-\U0001F7FF"  # Geometric Shapes Extended
+        u"\U0001F800-\U0001F8FF"  # Supplemental Arrows-C
+        u"\U0001F900-\U0001F9FF"  # Supplemental Symbols and Pictographs
+        u"\U0001FA00-\U0001FA6F"  # Chess Symbols
+        u"\U0001FA70-\U0001FAFF"  # Symbols and Pictographs Extended-A
+        u"\U00002702-\U000027B0"  # Dingbats
+        u"\U000024C2-\U0001F251" 
+        "]+", flags=re.UNICODE)
+    
+    text_without_emojis = emoji_pattern.sub('', text)
+    return text_without_emojis
+def clean_emojis(text):
+    # Remove emojis using regular expression
+    emoji_pattern = re.compile("["
+        u"\U0001F600-\U0001F64F"  # emoticons
+        u"\U0001F300-\U0001F5FF"  # symbols & pictographs
+        u"\U0001F680-\U0001F6FF"  # transport & map symbols
+        u"\U0001F700-\U0001F77F"  # alchemical symbols
+        u"\U0001F780-\U0001F7FF"  # Geometric Shapes Extended
+        u"\U0001F800-\U0001F8FF"  # Supplemental Arrows-C
+        u"\U0001F900-\U0001F9FF"  # Supplemental Symbols and Pictographs
+        u"\U0001FA00-\U0001FA6F"  # Chess Symbols
+        u"\U0001FA70-\U0001FAFF"  # Symbols and Pictographs Extended-A
+        u"\U00002702-\U000027B0"  # Dingbats
+        u"\U000024C2-\U0001F251" 
+        "]+", flags=re.UNICODE)
+    
+    text_without_emojis = emoji_pattern.sub('', text)
+    return text_without_emojis
+def regex_processes(text):
+    # Remove hashtags using regular expression
+    hashtag_pattern = r'#\w+'
+    text_without_hashtags = re.sub(hashtag_pattern, '', text)
+
+    # Remove sentences in quotation marks
+    quote_pattern_1 = r'"[^"]*"'
+    text_without_quotes = re.sub(quote_pattern_1, '', text_without_hashtags)
+    
+    # Remove sentences in quotation marks
+    quote_pattern_2 = r'"(^")*"'
+    text_without_quotes = re.sub(quote_pattern_2, '', text_without_quotes)
+
+    # Remove emails using regular expression
+    email_pattern = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b'
+    text_without_emails = re.sub(email_pattern, '', text_without_quotes)
+
+    # Remove links (URLs) using regular expression
+    link_pattern = r'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\\(\\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+'
+    text_without_links = re.sub(link_pattern, '', text_without_emails)
+
+    # Remove newline characters
+    text_without_newlines = text_without_links.replace('\n', ' ')
+    text_without_newlines = text_without_newlines.replace('\r', ' ')
+    text_without_newlines = text_without_newlines.replace('\t', ' ')
+    text_without_newlines = text_without_newlines.replace('/n', ' ')
+    text_without_newlines = text_without_newlines.replace('/r', ' ')
+    text_without_newlines = text_without_newlines.replace('/t', ' ')
+    
+    return text_without_newlines
+def clean_puncts(text):
+
+    # Remove punctuation using string.punctuation
+    translator = str.maketrans("", "", string.punctuation)
+    text_without_punct = text.translate(translator)
+
+    return text_without_punct
+def remove_stopwords(tokens):
+
+    # Remove stopwords
+    stop_words = set(stopwords.words('english'))
+    removed_stopwords_data = [word for word in tokens if word.lower() not in stop_words]
+
+    return removed_stopwords_data
+def tokenize(text):
+    # Tokenize the text
+    tokens = nltk.word_tokenize(text)
+    return tokens
+wordnet_lemmatizer = WordNetLemmatizer()
+
+def lemmazation(text):
+    
+    lemm_text = [wordnet_lemmatizer.lemmatize(word) for word in text]
+    return lemm_text
+porter_stemmer = PorterStemmer()
+def stemming(text):
+    stem_text = [porter_stemmer.stem(word) for word in text]
+    return stem_text
+english_words = set(words.words())
+
+def filter_non_english(tokens):
+    english_tokens = [word for word in tokens if word.lower() in english_words]
+    return english_tokens
+def nlp_preprocessing(text, last_type="lemma"):
+    """
+    type can be stem or lemma
+    """
+    
+    text = clean_emojis(text)
+    text = regex_processes(text)
+    text = clean_puncts(text)
+    tokens = tokenize(text)
+    tokens = remove_stopwords(tokens)
+    
+    if last_type =='stem':
+        tokens = stemming(tokens)
+    elif last_type =='lemma':
+        tokens = lemmazation(tokens)
+    else:
+        raise ValueError("last_type parameter has been assigned wrong!. It can be stem or lemma.")
+
+    tokens = filter_non_english(tokens)
+    
+    return tokens
+dep_df = pd.read_csv('./Depression_anxiety_dataset/depression_pure/dataset.csv')
+
+dep_reddit_df = pd.read_csv('./Depression_anxiety_dataset/dep_reddit/depression_dataset_reddit_cleaned.csv')
+
+stress_analysis_df_train = pd.read_csv("./Depression_anxiety_dataset/stress_analysis/dreaddit-train.csv")
+stress_analysis_df_test = pd.read_csv("./Depression_anxiety_dataset/stress_analysis/dreaddit-test.csv")
+
+student_anx_dep_df = pd.read_excel("./Depression_anxiety_dataset/student_dep_anx/dataset.xlsx")
+def add_word_size_feature(dep_df, dep_reddit_df, stress_analysis_df_train, student_anx_dep_df):
+    dep_df['words_size'] = [len(text.split()) if pd.notna(text) else np.nan for text in dep_df['content'].values]
+    dep_reddit_df['words_size'] = [len(text.split()) if pd.notna(text) else np.nan for text in dep_reddit_df['clean_text'].values]
+    stress_analysis_df_train['words_size'] = [len(text.split()) if pd.notna(text) else np.nan for text in stress_analysis_df_train['text'].values]
+    student_anx_dep_df['words_size'] = [len(text.split()) if pd.notna(text) else np.nan for text in student_anx_dep_df['text'].values]
+    
+    print('Done')
+
+
+LINKS
+https://residencyadvisor.com/resources/residency-burnout-prevention/no-feeling-numb-isnt-just-residency-separating-burnout-myths
+https://residencyadvisor.com/resources/work-life-balance/i-feel-numb-about-medicineis-this-normal-or-a-real-problem
+https://orda.shef.ac.uk/articles/dataset/Feeling_Socially_Dis_Engaging_Emotions_with_Favorite_Music_The_Role_of_Self-Construal_Across_Cultures_-_Data_Analysis/28678157

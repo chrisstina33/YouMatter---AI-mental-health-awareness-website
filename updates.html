@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Podcasts & Functionalities</title>
+
+<style>
+body{
+    margin:0;
+    font-family: 'Inter', sans-serif;
+    background: linear-gradient(135deg, #dbeafe, #f0f9ff);
+    text-align:left;
+    transition: background 0.3s, color 0.3s;
+}
+
+/* ===== OVERLAY (BLUR BACKGROUND) ===== */
+#overlay{
+    position: fixed;
+    inset: 0;
+    backdrop-filter: blur(6px);
+    background: rgba(0,0,0,0.2);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+    z-index: 1;
+}
+
+#overlay.active{
+    opacity: 1;
+    pointer-events: all;
+}
+
+/* ===== TITLE ===== */
+h1{
+    margin:20px 10px;
+    font-size:22px;
+    color:#1e3a8a;
+}
+
+/* ===== GRID ===== */
+.container{
+    display:grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap:20px;
+    padding:20px;
+}
+
+@media (max-width:500px){
+    .container{
+        grid-template-columns:1fr;
+        padding:15px;
+    }
+}
+
+/* ===== VIDEO ===== */
+.video{
+    background:white;
+    border-radius:20px;
+    box-shadow:0 10px 25px rgba(0,0,0,0.1);
+    padding:10px;
+}
+
+iframe{
+    width:100%;
+    height:180px;
+    border:none;
+    border-radius:15px;
+}
+
+/* SETTINGS BUTTON */
+        #settings_button {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            overflow: hidden;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            z-index: 2;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: transparent;
+        }
+
+        #settings_button img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+#settings_button:hover { transform: scale(1.1); }
+
+
+/* ===== SIDEBAR ===== */
+#settings_panel{
+    position: fixed;
+    top:0;
+    right:0;
+    width:320px;
+    max-width:85%;
+    height:100%;
+    background: rgba(255,255,255,0.95);
+    padding:20px;
+    transform: translateX(100%);
+    transition: transform 0.4s ease;
+    z-index:3;
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+    overflow-y:auto;
+    text-align:left;
+}
+#settings_panel h3 {
+    text-align: left;
+}
+@media(max-width:500px){
+    #settings_panel{
+        width:100%;
+        max-width:100%;
+    }
+}
+
+#settings_panel.active{
+    transform: translateX(0);
+}
+
+/* ===== SIDEBAR ITEMS ===== */
+.sidebar-item{
+    padding:10px 0;
+    border-bottom:1px solid rgba(0,0,0,0.1);
+    cursor:pointer;
+    text-align:left;
+}
+
+/* ===== INPUTS ===== */
+input{
+    width:100%;
+    padding:10px;
+    border-radius:10px;
+    border:1px solid #ccc;
+    font-size:16px;
+}
+
+/* ===== MODERN TOGGLE ===== */
+.toggle-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+.modern-switch{
+    position:relative;
+    width:52px;
+    height:28px;
+}
+
+.modern-switch input{
+    opacity:0;
+    width:0;
+    height:0;
+}
+
+.modern-slider{
+    position:absolute;
+    inset:0;
+    background:#e5e7eb;
+    border-radius:50px;
+    transition:0.3s;
+}
+
+.modern-slider::before{
+    content:"";
+    position:absolute;
+    width:22px;
+    height:22px;
+    left:3px;
+    top:3px;
+    background:white;
+    border-radius:50%;
+    transition:0.3s;
+}
+
+.modern-switch input:checked + .modern-slider{
+    background:linear-gradient(135deg,#22c55e,#16a34a);
+    box-shadow:0 0 10px rgba(34,197,94,0.5);
+}
+
+.modern-switch input:checked + .modern-slider::before{
+    transform:translateX(24px);
+}
+
+/* ===== BUTTON ===== */
+#saveSettings{
+    margin-top:20px;
+    padding:14px;
+    border:none;
+    border-radius:30px;
+    cursor:pointer;
+}
+
+/* ===== DARK MODE ===== */
+body.dark{
+    background:#1e293b;
+    color:white;
+}
+
+body.dark .video{
+    background:#334155;
+}
+
+body.dark #settings_panel{
+    background: rgba(40,50,70,0.95);
+}
+</style>
+</head>
+
+<body>
+
+<div id="overlay"></div>
+
+<button id="settings_button">
+    <img src="pfp24.jpg">
+</button>
+
+<div id="settings_panel">
+    <h3>Settings</h3>
+
+    <div class="sidebar-item" onclick="goTo('account.html')">Account information</div>
+    <div class="sidebar-item" onclick="goTo('edit.html')">Edit profile</div>
+
+    <div class="sidebar-item">AI companion name</div>
+    <input type="text" id="aiNameInput" placeholder="Enter AI name">
+
+    <div class="sidebar-item" onclick="goTo('updates.html')">Updates</div>
+    <div class="sidebar-item" onclick="goTo('regulation.html')">Regulation</div>
+    <div class="sidebar-item" onclick="goTo('relaxation.html')">Relaxation exercises</div>
+
+    <div class="toggle-row">
+        <span>Dark Mode</span>
+        <label class="modern-switch">
+            <input type="checkbox" id="darkToggle">
+            <span class="modern-slider"></span>
+        </label>
+    </div>
+
+    <label>Background Color</label>
+    <input type="color" id="bgColor">
+
+    <button id="saveSettings">Close & Save</button>
+</div>
+
+<section>
+<h1>Psychology Podcasts</h1>
+
+<div class="container">
+<div class="video"><iframe src="https://www.youtube.com/embed/OTQJmkXC2EI"></iframe></div>
+<div class="video"><iframe src="https://www.youtube.com/embed/80dwYp7TiDQ"></iframe></div>
+<div class="video"><iframe src="https://www.youtube.com/embed/iYfPqg7aXH8"></iframe></div>
+<div class="video"><iframe src="https://www.youtube.com/embed/Nkg1uIXZwko"></iframe></div>
+<div class="video"><iframe src="https://www.youtube.com/embed/bjvPbfxE3CI"></iframe></div>
+<div class="video"><iframe src="https://www.youtube.com/embed/vcwV8WmTuQI"></iframe></div>
+</div>
+</section>
+
+<script>
+const settingsBtn = document.getElementById("settings_button");
+const settingsPanel = document.getElementById("settings_panel");
+const overlay = document.getElementById("overlay");
+const saveBtn = document.getElementById("saveSettings");
+const darkToggle = document.getElementById("darkToggle");
+const bgColor = document.getElementById("bgColor");
+const aiNameInput = document.getElementById("aiNameInput");
+
+// OPEN
+settingsBtn.onclick = () => {
+    settingsPanel.classList.add("active");
+    overlay.classList.add("active");
+};
+
+// CLOSE
+function closePanel(){
+    settingsPanel.classList.remove("active");
+    overlay.classList.remove("active");
+}
+
+saveBtn.onclick = closePanel;
+overlay.onclick = closePanel;
+
+// NAVIGATION
+function goTo(page){
+    window.location.href = page;
+}
+
+// DARK MODE
+if(localStorage.getItem("darkMode") === "on"){
+    document.body.classList.add("dark");
+    darkToggle.checked = true;
+}
+
+darkToggle.onchange = () => {
+    if(darkToggle.checked){
+        document.body.classList.add("dark");
+        localStorage.setItem("darkMode","on");
+    } else{
+        document.body.classList.remove("dark");
+        localStorage.setItem("darkMode","off");
+    }
+};
+
+// BACKGROUND COLOR
+const savedColor = localStorage.getItem("bgColor");
+if(savedColor){
+    document.body.style.background = savedColor;
+    bgColor.value = savedColor;
+}
+
+bgColor.oninput = (e) => {
+    document.body.style.background = e.target.value;
+    localStorage.setItem("bgColor", e.target.value);
+};
+
+// AI NAME
+if(localStorage.getItem("aiName")){
+    aiNameInput.value = localStorage.getItem("aiName");
+}
+
+aiNameInput.oninput = (e) => {
+    localStorage.setItem("aiName", e.target.value);
+};
+</script>
+
+</body>
+</html>
