@@ -1,4 +1,0 @@
-choleric: impulsive, angry, direct, dominant, impatient
-sanguine: cheerful, sociable, enthusiastic, optimistic, talkative
-melancholic: anxious, sad, introverted, perfectionist, withdrawn
-phlegmatic: calm, balanced, patient, attentive, reserved
