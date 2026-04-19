@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Create Account</title>
+<title>Sign in - Account</title>
 <style>
 /* BODY */
 body {
@@ -29,33 +29,34 @@ body.dark { background: #1e2633; color: white; }
 .cloud img { width: 220px; }
 @keyframes float { from { transform: translateX(-300px); } to { transform: translateX(120vw); } }
 
-/* SETTINGS BUTTON */
- #settings_button {
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        width: 60px;
-        height: 60px;
-        border-radius: 50%;
-        border: none;
-        cursor: pointer;
-        box-shadow: 0 5px 20px rgba(0,0,0,0.2);
-        z-index: 2;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: transparent;
-        transition: transform 0.3s;
-    }
+ /* SETTINGS BUTTON */
+        #settings_button {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            overflow: hidden;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            z-index: 2;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: transparent;
+        }
+
+        #settings_button img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+        }
 
     #settings_button:hover { transform: scale(1.1); }
-
-    #settings_button img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        border-radius: 50%;
-    }
 
 /* SIDEBAR */
 #settings_panel {
@@ -122,7 +123,7 @@ body.dark #saveSettings { background: rgba(60,70,90,0.7); color:white; }
 #container button { width: 100%; padding: 12px; border: none; border-radius: 12px; cursor: pointer; font-size: 16px; transition: all 0.3s ease; }
 #createBtn { background: linear-gradient(90deg, #667eea, #764ba2); color: white; }
 #createBtn:hover { background: linear-gradient(90deg, #764ba2, #667eea); transform: scale(1.05); }
-#googleBtn { background: #4285F4; color: white; margin-top: 10px; }
+
 </style>
 </head>
 <body>
@@ -166,73 +167,124 @@ body.dark #saveSettings { background: rgba(60,70,90,0.7); color:white; }
     <h2>Sign into your account</h2>
     <input type="email" id="email" placeholder="Enter your email" required>
     <input type="password" id="password" placeholder="Enter your password" required>
-    <div id="twoFactorSection" style="display:none;">
-        <label for="twoFactor">Enter 2FA Code</label>
-        <input type="text" id="twoFactor" placeholder="123456">
-    </div>
+   
     <button id="createBtn">Sign in</button>
-    <button id="googleBtn">Sign in with Google</button>
+   
     <p style="margin-top:15px">
         Don't have an account? <a href="sign_up.html">Create Account</a>
     </p>
 </div>
 
-<script>
-// LOGIN LOGIC
-const loginBtn = document.getElementById("createBtn");
-const emailInput = document.getElementById("email");
-const passwordInput = document.getElementById("password");
-const twoFactorSection = document.getElementById("twoFactorSection");
-const twoFactorInput = document.getElementById("twoFactor");
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-loginBtn.addEventListener("click", () => {
-    const email = emailInput.value.trim();
-    const password = passwordInput.value;
-    const storedEmail = localStorage.getItem("userEmail");
-    const storedPassword = localStorage.getItem("userPassword");
+const firebaseConfig = {
+  apiKey: "AIzaSyBHbh4I3-Lf3nSqghLMuaD6--QBawGIiGg",
+  authDomain: "you-matter-11.firebaseapp.com",
+  projectId: "you-matter-11",
+  appId: "1:84371060509:web:cfade62be30e34390113f4"
+};
 
-    if(email === storedEmail && password === storedPassword){
-        if(twoFactorSection.style.display === "none"){
-            twoFactorSection.style.display = "block";
-            alert("Please enter your 2FA code sent to your email/phone.");
-            return;
-        }
-        const stored2FA = localStorage.getItem("user2FA");
-        if(twoFactorInput.value.trim() === stored2FA){
-            alert("Login successful!");
-            window.location.href = "main_page.html";
-        } else { alert("Incorrect 2FA code."); }
-    } else { alert("Account not found! Please sign up."); }
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
+const btn = document.getElementById("createBtn");
+
+btn.addEventListener("click", async () => {
+
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+
+    try {
+        btn.disabled = true;
+        btn.textContent = "Logging in...";
+
+        await signInWithEmailAndPassword(auth, email, password);
+
+        localStorage.setItem("userEmail", email);
+
+        window.location.href = "account.html";
+
+    } catch (e) {
+        alert("Email sau parolă greșită");
+        btn.disabled = false;
+        btn.textContent = "Sign in";
+    }
 });
-
-// SETTINGS LOGIC
+</script>
+<script>
 const settingsBtn = document.getElementById("settings_button");
 const settingsPanel = document.getElementById("settings_panel");
-const darkToggle = document.getElementById("darkToggle");
-const bgColor = document.getElementById("bgColor");
-const aiNameInput = document.getElementById("aiNameInput");
 const saveSettings = document.getElementById("saveSettings");
-const mainContainer = document.getElementById("container");
+const mainContainer = document.getElementById("container") || document.getElementById("app-container");
 
-settingsBtn.onclick = () => { settingsPanel.classList.toggle("active"); mainContainer.classList.toggle("blur"); }
-saveSettings.onclick = () => { settingsPanel.classList.remove("active"); mainContainer.classList.remove("blur"); }
+// OPEN / CLOSE SIDEBAR
+if (settingsBtn) {
+    settingsBtn.onclick = () => {
+        settingsPanel.classList.toggle("active");
+        if (mainContainer) mainContainer.classList.toggle("blur");
+    };
+}
 
-const savedColor = localStorage.getItem("bgColor") || "#B2EBF2";
-document.body.style.backgroundColor = savedColor;
-bgColor.value = savedColor;
-bgColor.oninput = e => { document.body.style.backgroundColor = e.target.value; localStorage.setItem("bgColor", e.target.value); }
+if (saveSettings) {
+    saveSettings.onclick = () => {
+        settingsPanel.classList.remove("active");
+        if (mainContainer) mainContainer.classList.remove("blur");
+    };
+}
 
-if(localStorage.getItem("darkMode") === "on"){ document.body.classList.add("dark"); darkToggle.checked=true; }
-darkToggle.addEventListener("change",()=>{ 
-    if(darkToggle.checked){ document.body.classList.add("dark"); localStorage.setItem("darkMode","on"); }
-    else{ document.body.classList.remove("dark"); localStorage.setItem("darkMode","off"); }
-});
+// DARK MODE
+const darkToggle = document.getElementById("darkToggle");
 
-if(localStorage.getItem("aiName")) aiNameInput.value = localStorage.getItem("aiName");
-aiNameInput.addEventListener("input",e=>{ localStorage.setItem("aiName",e.target.value); });
+if (localStorage.getItem("darkMode") === "on") {
+    document.body.classList.add("dark");
+    if (darkToggle) darkToggle.checked = true;
+}
 
-function goTo(url){ window.location.href = url; }
+if (darkToggle) {
+    darkToggle.addEventListener("change", () => {
+        if (darkToggle.checked) {
+            document.body.classList.add("dark");
+            localStorage.setItem("darkMode", "on");
+        } else {
+            document.body.classList.remove("dark");
+            localStorage.setItem("darkMode", "off");
+        }
+    });
+}
+
+// BACKGROUND
+const bgColor = document.getElementById("bgColor");
+
+if (bgColor) {
+    const saved = localStorage.getItem("bgColor") || "#B2EBF2";
+    document.body.style.backgroundColor = saved;
+    bgColor.value = saved;
+
+    bgColor.addEventListener("input", (e) => {
+        localStorage.setItem("bgColor", e.target.value);
+        document.body.style.backgroundColor = e.target.value;
+    });
+}
+
+// AI NAME
+const aiNameInput = document.getElementById("aiNameInput");
+
+if (aiNameInput) {
+    if (localStorage.getItem("aiName")) {
+        aiNameInput.value = localStorage.getItem("aiName");
+    }
+
+    aiNameInput.addEventListener("input", (e) => {
+        localStorage.setItem("aiName", e.target.value);
+    });
+}
+
+// NAV
+function goTo(url) {
+    window.location.href = url;
+}
 </script>
-
 </body>
 </html>

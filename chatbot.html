@@ -17,7 +17,19 @@ body {
     flex-direction: column;
     transition: background 0.3s;
 }
-body.dark { background: #1e2633; color: white; }
+body.dark {
+    background: radial-gradient(circle at top, #1e2633, #0b0f16);
+}
+    body.dark #message_input {
+    background: #2b3446;
+    color: white;
+    border: 1px solid #445;
+}
+
+body.dark #input_area {
+    background: #1e2633;
+    border-top: 1px solid #445;
+}
  
 /* CLOUDS */
 .cloud {
@@ -33,6 +45,9 @@ body.dark { background: #1e2633; color: white; }
     to { transform: translateX(120vw); } 
 }
 body.pauseClouds .cloud { animation-play-state: paused; }
+    body.dark.cloud{
+        opacity:0.12;
+    }
  
 /* TOP BAR */
 #topbar {
@@ -46,7 +61,24 @@ body.pauseClouds .cloud { animation-play-state: paused; }
     border-bottom: 1px solid #ccc;
     position: relative;
     z-index: 2;
+    transition: background 0.3s, color 0.3s;
 }
+    body.dark #topbar{
+        background: #0f141c;
+        color:white;
+        border-bottom: 1px solid  #222b3a;
+         padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 22px;
+    font-weight: bold;
+    border-bottom: 1px solid #ccc;
+    position: relative;
+    z-index: 2;
+    }
+    
+        
 #home_link {
     text-decoration: none;
     padding: 8px 14px;
@@ -54,9 +86,14 @@ body.pauseClouds .cloud { animation-play-state: paused; }
     color: white;
     font-weight: bold;
     font-family: "Times New Roman";
-    transition: background 0.3s;
+    transition: background 0.3s, color 0.3s;
 }
- 
+ body.dark #home_link{
+     color: #ffffff;
+ }
+    #home_link:hover{
+        opacity:0.8;
+    }
 #settings_button{
 position:fixed;
 top:20px;
@@ -123,9 +160,22 @@ border-radius:50%;
     border-radius: 14px;
     font-size: 16px;
     line-height: 1.4;
+    color: black; /* default safe */
 }
-.user { align-self: flex-end; background: #87CEFA; color: black; }
-.ai { align-self: flex-start; background: white; border: 1px solid #ccc; }
+/* USER bubble */
+.user {
+    align-self: flex-end;
+    background: #87CEFA;
+    color: black;
+}
+
+/* AI bubble */
+.ai {
+    align-self: flex-start;
+    background: white;
+    border: 1px solid #ccc;
+    color: black; /* IMPORTANT FIX */
+}
  
 /* INPUT AREA */
 #input_area {
@@ -179,7 +229,20 @@ border-radius:50%;
     transform: translateX(0);
     opacity: 1;
 }
-body.dark #settings_panel { background: #2b3446; }
+body.dark #settings_panel {
+    background: #2b3446; 
+    color:white; }
+    /* DARK MODE FIX */
+body.dark .ai {
+    background: #2b3446;
+    color: white;
+    border: 1px solid #445;
+}
+
+body.dark .user {
+    background: #4aa3ff;
+    color: white;
+}
  
 /* SIDEBAR ITEMS */
 .sidebar-item {
@@ -189,6 +252,10 @@ body.dark #settings_panel { background: #2b3446; }
     border-bottom: 1px solid rgba(0,0,0,0.1);
 }
 .sidebar-item:hover { opacity: 0.7; }
+    body.dark.sidebar-item{
+        color:white;
+        border-bottom:1px solid rgba(255,255,255,0,08);
+    }
  
 .sidebar-section { margin-top: 18px; }
 .sidebar-section label { font-size: 14px; display: block; margin-bottom: 6px; }
@@ -244,7 +311,7 @@ body.dark #saveSettings { background: rgba(60,70,90,0.7); color: white; }
 <!-- TOP BAR -->
 <div id="topbar">
     <a href="index.html" id="home_link">Home</a>
-    YouMatter AI Companion
+  
     <button id="settings_button"><img src="pfp24.jpg" alt="Settings"></button>
 </div>
  
@@ -262,7 +329,7 @@ body.dark #saveSettings { background: rgba(60,70,90,0.7); color: white; }
     <div id="settings_panel">
         <h3>Settings</h3>
         <div class="sidebar-item" onclick="goTo('account.html')">Account information</div>
-        <div class="sidebar-item" onclick="goTo('profile.html')">Edit profile</div>
+        <div class="sidebar-item" onclick="goTo('edit.html')">Edit profile</div>
         <div class="sidebar-item">AI companion name</div>
         <div class="sidebar-section">
             <input type="text" id="aiNameInput" placeholder="Enter AI name">
@@ -368,23 +435,25 @@ async function sendMessage(){
     sendButton.innerText = "...";
 
     try {
-        const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+        const res = await fetch("https://wellness-backend-qw0i.onrender.com/api/therapy", {
             method: "POST",
             headers: {
-                "Authorization": "Bearer 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",
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify({
-                model: "meta-llama/llama-3.2-3b-instruct:free",
-                messages: [
-                    {role: "system", content: "You are a compassionate mental health support assistant. Be empathetic and supportive."},
-                    {role: "user", content: text}
-                ]      
-            })
+            body: JSON.stringify({ message: text })
         });
 
         const data = await res.json();
-        let aiReply = data.choices[0]?.message?.content || "I'm here for you. Tell me what you need for real, please.";
+        let aiReply;
+
+        if(data.reply){ 
+            aiReply = data.reply;
+        } else if(data.error){
+            aiReply="Error: "+data.error;
+        } else{
+            aiReply="Unexpected response from server";
+        }
+
         addMessage(aiReply, "ai");
 
     } catch (error) {
@@ -394,7 +463,6 @@ async function sendMessage(){
         sendButton.disabled = false;
         sendButton.innerText = "Send";
     }
-
 }
 sendButton.addEventListener("click", sendMessage);
 input.addEventListener("keypress", e => { if(e.key === "Enter") sendMessage(); });

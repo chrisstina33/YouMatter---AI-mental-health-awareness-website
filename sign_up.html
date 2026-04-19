@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
@@ -47,7 +46,7 @@
             }
         }
 
-        /* ================= SETTINGS BUTTON & SIDEBAR ================= */
+       /* SETTINGS BUTTON */
         #settings_button {
             position: fixed;
             top: 20px;
@@ -58,8 +57,9 @@
             border: none;
             cursor: pointer;
             overflow: hidden;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
-            z-index: 4;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            z-index: 2;
+            padding: 0;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -73,6 +73,9 @@
             border-radius: 50%;
         }
 
+    #settings_button:hover { transform: scale(1.1); }
+
+       
         #settings_panel {
             position: fixed;
             top: 0;
@@ -303,7 +306,7 @@
     <div id="settings_panel">
         <h3>Settings</h3>
         <div class="sidebar-item" onclick="goTo('account.html')">Account information</div>
-        <div class="sidebar-item" onclick="goTo('profile.html')">Edit profile</div>
+        <div class="sidebar-item" onclick="goTo('edit.html')">Edit profile</div>
         <div class="sidebar-item">AI companion name</div>
         <div class="sidebar-section">
             <input type="text" id="aiNameInput" placeholder="Enter AI name">
@@ -332,111 +335,140 @@
 
     
 
-    <script>
-        // ---------------- SETTINGS LOGIC ----------------
-        const settingsBtn = document.getElementById("settings_button");
-        const settingsPanel = document.getElementById("settings_panel");
-        const darkToggle = document.getElementById("darkToggle");
-        const bgColor = document.getElementById("bgColor");
-        const aiNameInput = document.getElementById("aiNameInput");
-        const saveSettings = document.getElementById("saveSettings");
-        const mainContainer = document.getElementById("container");
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-        settingsBtn.onclick = () => {
-            settingsPanel.classList.toggle("active");
-            mainContainer.classList.toggle("blur");
+const firebaseConfig = {
+  apiKey: "AIzaSyBHbh4I3-Lf3nSqghLMuaD6--QBawGIiGg",
+  authDomain: "you-matter-11.firebaseapp.com",
+  projectId: "you-matter-11",
+  appId: "1:84371060509:web:cfade62be30e34390113f4"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
+const btn = document.getElementById("createBtn");
+const email = document.getElementById("email");
+const password = document.getElementById("password");
+
+let step = 1;
+
+btn.addEventListener("click", async () => {
+
+    if (step === 1) {
+        if (!email.value.includes("@")) {
+            alert("Email invalid");
+            return;
         }
 
-        saveSettings.onclick = () => {
-            settingsPanel.classList.remove("active");
-            mainContainer.classList.remove("blur");
+        email.disabled = true;
+        password.style.display = "block";
+        btn.textContent = "Create Account";
+        step = 2;
+        return;
+    }
+
+    if (step === 2) {
+        if (password.value.length < 6) {
+            alert("Parola prea scurtă");
+            return;
         }
 
-        const savedColor = localStorage.getItem("bgColor") || "#B2EBF2";
-        document.body.style.backgroundColor = savedColor;
-        bgColor.value = savedColor;
-        bgColor.oninput = e => {
-            document.body.style.backgroundColor = e.target.value;
-            localStorage.setItem("bgColor", e.target.value);
-        }
+        try {
+            btn.disabled = true;
+            btn.textContent = "Creating...";
 
-        if (localStorage.getItem("darkMode") === "on") {
+            await createUserWithEmailAndPassword(auth, email.value, password.value);
+
+            // SALVARE LOCALĂ
+            localStorage.setItem("userEmail", email.value);
+            localStorage.setItem("memberSince", new Date().toISOString());
+
+            window.location.href = "questionnaire.html";
+
+        } catch (e) {
+            alert(e.message);
+            btn.disabled = false;
+            btn.textContent = "Create Account";
+        }
+    }
+});
+</script>
+<script>
+const settingsBtn = document.getElementById("settings_button");
+const settingsPanel = document.getElementById("settings_panel");
+const saveSettings = document.getElementById("saveSettings");
+const mainContainer = document.getElementById("container") || document.getElementById("app-container");
+
+// OPEN / CLOSE SIDEBAR
+if (settingsBtn) {
+    settingsBtn.onclick = () => {
+        settingsPanel.classList.toggle("active");
+        if (mainContainer) mainContainer.classList.toggle("blur");
+    };
+}
+
+if (saveSettings) {
+    saveSettings.onclick = () => {
+        settingsPanel.classList.remove("active");
+        if (mainContainer) mainContainer.classList.remove("blur");
+    };
+}
+
+// DARK MODE
+const darkToggle = document.getElementById("darkToggle");
+
+if (localStorage.getItem("darkMode") === "on") {
+    document.body.classList.add("dark");
+    if (darkToggle) darkToggle.checked = true;
+}
+
+if (darkToggle) {
+    darkToggle.addEventListener("change", () => {
+        if (darkToggle.checked) {
             document.body.classList.add("dark");
-            darkToggle.checked = true;
+            localStorage.setItem("darkMode", "on");
+        } else {
+            document.body.classList.remove("dark");
+            localStorage.setItem("darkMode", "off");
         }
-        darkToggle.addEventListener("change", () => {
-            if (darkToggle.checked) {
-                document.body.classList.add("dark");
-                localStorage.setItem("darkMode", "on");
-            } else {
-                document.body.classList.remove("dark");
-                localStorage.setItem("darkMode", "off");
-            }
-        });
+    });
+}
 
-        if (localStorage.getItem("aiName")) aiNameInput.value = localStorage.getItem("aiName");
-        aiNameInput.addEventListener("input", e => {
-            localStorage.setItem("aiName", e.target.value);
-        });
+// BACKGROUND
+const bgColor = document.getElementById("bgColor");
 
-        // ---------------- SIGN-UP LOGIC ----------------
-        const createBtn = document.getElementById("createBtn");
-        const emailInput = document.getElementById("email");
-        const passwordInput = document.getElementById("password");
-        const twoFactorSection = document.getElementById("twoFactorSection");
-        const twoFactorInput = document.getElementById("twoFactor");
+if (bgColor) {
+    const saved = localStorage.getItem("bgColor") || "#B2EBF2";
+    document.body.style.backgroundColor = saved;
+    bgColor.value = saved;
 
-        let generated2FA = "";
-        let step = 1;
+    bgColor.addEventListener("input", (e) => {
+        localStorage.setItem("bgColor", e.target.value);
+        document.body.style.backgroundColor = e.target.value;
+    });
+}
 
-        createBtn.addEventListener("click", () => {
-            if (step === 1) {
-                const email = emailInput.value.trim();
-                if (!email) {
-                    alert("Please enter your email.");
-                    return;
-                }
-                emailInput.disabled = true;
-                passwordInput.style.display = "block";
-                step = 2;
-                return;
-            }
+// AI NAME
+const aiNameInput = document.getElementById("aiNameInput");
 
-            if (step === 2) {
-                const password = passwordInput.value.trim();
-                if (password.length < 6) {
-                    alert("Password must be at least 6 characters.");
-                    return;
-                }
-                localStorage.setItem("userEmail", emailInput.value.trim());
-                localStorage.setItem("userPassword", password);
+if (aiNameInput) {
+    if (localStorage.getItem("aiName")) {
+        aiNameInput.value = localStorage.getItem("aiName");
+    }
 
-                generated2FA = Math.floor(100000 + Math.random() * 900000).toString();
-                console.log("Your 2FA code (simulate sending via email/phone):", generated2FA);
+    aiNameInput.addEventListener("input", (e) => {
+        localStorage.setItem("aiName", e.target.value);
+    });
+}
 
-                passwordInput.disabled = true;
-                twoFactorSection.style.display = "block";
-                createBtn.textContent = "Verify 2FA";
-                step = 3;
-                alert("A 6-digit 2FA code has been generated (check console in this demo).");
-                return;
-            }
-
-            if (step === 3) {
-                if (twoFactorInput.value.trim() === generated2FA) {
-                    alert("Account successfully created!");
-                    window.location.href = "main_page.html";
-                } else {
-                    alert("Incorrect 2FA code. Try again.");
-                }
-            }
-        });
-
-        function goTo(url) {
-            window.location.href = url;
-        }
-    </script>
-
+// NAV
+function goTo(url) {
+    window.location.href = url;
+}
+</script>
 </body>
 
 </html>

@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gentle Check-In</title>
+<style>
+:root {
+  --card: #111a2e;
+  --primary: #7dd3fc;
+  --accent: #a78bfa;
+  --text: #e5e7eb;
+  --muted: #94a3b8;
+  --soft: rgba(255,255,255,0.06);
+  --border: rgba(255,255,255,0.12);
+  --radius: 20px;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: system-ui, sans-serif;
+  background: radial-gradient(circle at top, #111a2e, #0b1220);
+  color: var(--text);
+  padding: 24px 16px;
+}
+
+.app {
+  width: 100%;
+  max-width: 520px;
+  background: var(--card);
+  border-radius: 28px;
+  padding: 24px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+}
+
+.progress {
+  height: 6px;
+  background: var(--soft);
+  border-radius: 999px;
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+
+.progress-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--primary), var(--accent));
+  transition: width 0.4s ease;
+}
+
+.step {
+  display: none;
+  flex-direction: column;
+  gap: 12px;
+  animation: fade 0.4s ease;
+}
+
+.step.active { display: flex; }
+
+@keyframes fade {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+h2 {
+  text-align: center;
+  font-weight: 650;
+  margin: 0;
+  color: var(--text);
+  font-size: 1.15rem;
+}
+
+.subtext {
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.input { display: flex; flex-direction: column; gap: 6px; }
+
+label { font-size: 0.85rem; color: var(--muted); }
+
+input[type=number],
+input[type=text] {
+  padding: 13px 14px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: var(--soft);
+  color: var(--text);
+  outline: none;
+  font-size: 1rem;
+  width: 100%;
+}
+
+input:focus { border-color: var(--primary); }
+
+.grid  { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+
+.card-opt {
+  padding: 12px 8px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: var(--soft);
+  text-align: center;
+  cursor: pointer;
+  transition: 0.2s;
+  font-size: 0.88rem;
+  color: var(--text);
+  line-height: 1.3;
+}
+
+.card-opt:hover    { transform: translateY(-2px); }
+.card-opt.selected { border-color: var(--primary); background: rgba(125,211,252,0.12); }
+
+.buttons {
+  display: flex;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+button {
+  flex: 1;
+  padding: 13px;
+  border-radius: var(--radius);
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.back {
+  background: transparent;
+  color: var(--muted);
+  border: 1px solid var(--border);
+}
+
+.next {
+  background: linear-gradient(90deg, var(--primary), var(--accent));
+  color: #0b1220;
+}
+
+.next:disabled { opacity: 0.5; cursor: default; }
+
+.note {
+  font-size: 0.82rem;
+  color: var(--muted);
+  text-align: center;
+  margin: 0;
+}
+</style>
+</head>
+<body>
+
+<div class="app">
+  <div class="progress"><div class="progress-fill" id="bar"></div></div>
+
+  <!-- Step 1: Height -->
+  <div class="step active">
+    <h2>Let's start gently</h2>
+    <p class="subtext">Only share what feels comfortable. Nothing here is required.</p>
+    <div class="input">
+      <label>Height (optional)</label>
+      <input id="height" type="number" placeholder="e.g. 170 cm">
+    </div>
+  </div>
+
+  <!-- Step 2: Weight -->
+  <div class="step">
+    <h2>Your weight (optional)</h2>
+    <p class="subtext">Helps personalise suggestions, but you can skip it.</p>
+    <div class="input">
+      <label>Weight (optional)</label>
+      <input id="weight" type="number" placeholder="e.g. 70 kg">
+    </div>
+  </div>
+
+  <!-- Step 3: Age -->
+  <div class="step">
+    <h2>How old are you? (optional)</h2>
+    <p class="subtext">We use this to tailor your experience a little better.</p>
+    <div class="input">
+      <label>Age (optional)</label>
+      <input id="age" type="number" placeholder="e.g. 28">
+    </div>
+  </div>
+
+  <!-- Step 4: Gender -->
+  <div class="step">
+    <h2>How would you like to be addressed?</h2>
+    <p class="subtext">Optional — choose what feels right.</p>
+    <div class="grid" id="gender">
+      <div class="card-opt" data="Female">Female</div>
+      <div class="card-opt" data="Male">Male</div>
+      <div class="card-opt" data="Non-binary">Non-binary</div>
+      <div class="card-opt" data="Prefer not">Prefer not to say</div>
+    </div>
+  </div>
+
+  <!-- Step 5: Nationality -->
+  <div class="step">
+    <h2>What's your nationality? (optional)</h2>
+    <p class="subtext">Helps us show culturally relevant suggestions.</p>
+    <div class="input">
+      <label>Nationality (optional)</label>
+      <input id="nationality" type="text" placeholder="e.g. Romanian, Japanese...">
+    </div>
+  </div>
+
+  <!-- Step 6: Religion -->
+  <div class="step">
+    <h2>Do you follow a religion? (optional)</h2>
+    <p class="subtext">We respect all beliefs and none.</p>
+    <div class="grid" id="religion">
+      <div class="card-opt" data="Christianity">Christianity</div>
+      <div class="card-opt" data="Islam">Islam</div>
+      <div class="card-opt" data="Judaism">Judaism</div>
+      <div class="card-opt" data="Hinduism">Hinduism</div>
+      <div class="card-opt" data="Buddhism">Buddhism</div>
+      <div class="card-opt" data="Other">Other</div>
+      <div class="card-opt" data="None">No religion</div>
+      <div class="card-opt" data="Prefer not">Prefer not to say</div>
+    </div>
+  </div>
+
+  <!-- Step 7: Diet -->
+  <div class="step">
+    <h2>Your lifestyle preference</h2>
+    <div class="grid" id="diet">
+      <div class="card-opt" data="Balanced">Balanced</div>
+      <div class="card-opt" data="Vegetarian">Vegetarian</div>
+      <div class="card-opt" data="Vegan">Vegan</div>
+      <div class="card-opt" data="Flexible">Flexible</div>
+    </div>
+  </div>
+
+  <!-- Step 8: Activity -->
+  <div class="step">
+    <h2>Your activity level</h2>
+    <div class="grid3" id="level">
+      <div class="card-opt" data="Beginner">Beginner</div>
+      <div class="card-opt" data="Moderate">Moderate</div>
+      <div class="card-opt" data="Active">Active</div>
+    </div>
+  </div>
+
+  <!-- Step 9: Reminders -->
+  <div class="step">
+    <h2>Would gentle reminders help you?</h2>
+    <p class="subtext">You can always change this later.</p>
+    <div class="grid" id="reminders">
+      <div class="card-opt" data="Yes">Yes, please</div>
+      <div class="card-opt" data="No">No thanks</div>
+    </div>
+    <p class="note">This is just support, not pressure 💙</p>
+  </div>
+
+  <div class="buttons">
+    <button class="back" onclick="prev()">Back</button>
+    <button class="next" id="next" onclick="next()">Continue</button>
+  </div>
+</div>
+
+<script>
+let i = 0;
+const steps = document.querySelectorAll(".step");
+const bar = document.getElementById("bar");
+const nextBtn = document.getElementById("next");
+const total = steps.length;
+
+function render() {
+  steps.forEach((s, idx) => s.classList.toggle("active", idx === i));
+  bar.style.width = (i / (total - 1)) * 100 + "%";
+  nextBtn.textContent = i === total - 1 ? "Finish" : "Continue";
+  nextBtn.disabled = false;
+}
+
+function next() {
+  if (i < total - 1) { i++; render(); }
+  else { window.location.href = "account.html"; }
+}
+
+function prev() {
+  if (i > 0) { i--; render(); }
+}
+
+document.querySelectorAll(".card-opt").forEach(card => {
+  card.onclick = () => {
+    card.closest(".grid, .grid3").querySelectorAll(".card-opt").forEach(c => c.classList.remove("selected"));
+    card.classList.add("selected");
+  };
+});
+
+render();
+</script>
+</body>
+</html>

@@ -310,6 +310,28 @@ background:#1f2735;
 body.dark .info-group{
 background:rgba(255,255,255,0.05);
 }
+#logoutBtn{
+width:100%;
+margin-top:15px;
+padding:14px;
+border:none;
+border-radius:16px;
+font-size:1rem;
+cursor:pointer;
+background:linear-gradient(135deg,#ff4d4d,#c0392b);
+color:white;
+box-shadow:0 6px 18px rgba(255,0,0,0.25);
+transition:0.2s ease;
+}
+
+#logoutBtn:hover{
+transform:translateY(-2px);
+box-shadow:0 10px 22px rgba(255,0,0,0.35);
+}
+
+#logoutBtn:active{
+transform:scale(0.98);
+}
 
 </style>
 </head>
@@ -345,7 +367,7 @@ background:rgba(255,255,255,0.05);
         </div>
         <button id="saveSettings">Close & Save</button>
     </div>
-</div>
+
 
 <!-- MAIN APP -->
 
@@ -381,6 +403,9 @@ background:rgba(255,255,255,0.05);
 <div class="info-label">Biography</div>
 <div class="info-value" id="user_bio">No bio yet</div>
 </div>
+<button id="logoutBtn" class="btn btn-secondary">
+🚪 Log out
+</button>
 
 <button id="chatButton">💬 Chat with AI companion</button>
 
@@ -406,16 +431,16 @@ const memberSince=document.getElementById("member_since");
 
 /* SIDEBAR */
 
-settingsBtn.onclick=()=>{
+settingsBtn.addEventListener("click", () => {
 settingsPanel.classList.toggle("active");
 appContainer.classList.toggle("blur");
-}
+});
 
-saveSettings.onclick=()=>{
-settingsPanel.classList.remove("active");
-appContainer.classList.remove("blur");
-}
 
+document.getElementById("logoutBtn").onclick = () => {
+localStorage.clear();
+window.location.href = "index.html";
+};
 /* NAVIGATION */
 
 function goTo(url){
@@ -506,7 +531,7 @@ const storedMembership = localStorage.getItem("membership");
 if(storedMembership){
 membershipDisplay.textContent = storedMembership;
 }else{
-membershipDisplay.textContent = "Mind Boost (€10)";
+membershipDisplay.textContent = "No membership";
 }
     const memberships = {
 basic: "Mind Boost (€10)",
@@ -536,7 +561,10 @@ if(storedBio){
 }else{
     userBioDisplay.textContent = "No bio added yet";
 }
-
+saveSettings.addEventListener("click", () => {
+    settingsPanel.classList.remove("active");
+    appContainer.classList.remove("blur");
+});
 </script>
 
 </body>
