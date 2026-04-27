@@ -17,11 +17,10 @@ app.use(cors({
 // 🔑 ENV
 const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
 
-// 🧠 USER STORAGE (simplu, în memorie)
+// 🧠 USER STORAGE
 const users = new Map(); 
 const chats = new Map();
 
-// helper
 function getUser(userId) {
   if (!users.has(userId)) {
     users.set(userId, { created: Date.now() });
@@ -39,9 +38,7 @@ function getChat(userId) {
 // 🧱 rate limit
 const limiter = rateLimit({
   windowMs: 60 * 1000,
-  max: 10,
-  standardHeaders: true,
-  legacyHeaders: false
+  max: 10
 });
 
 app.use("/api/therapy", limiter);
@@ -51,10 +48,10 @@ app.post("/api/therapy", async (req, res) => {
   try {
     const { message, userId } = req.body;
 
-    // 🚨 CHECK USER LOGIN
+    // 🚨 USER CHECK
     if (!userId) {
       return res.status(401).json({
-        reply: "⚠️ You need an account to use this AI. Please sign up or log in."
+        reply: "⚠️ You need an account to use this AI."
       });
     }
 
@@ -62,17 +59,15 @@ app.post("/api/therapy", async (req, res) => {
       return res.status(400).json({ reply: "Empty message." });
     }
 
-    // 👤 ensure user exists
     getUser(userId);
 
-    // 🧠 chat history per user
     const history = getChat(userId);
-
     history.push({ role: "user", content: message });
 
     const limited = history.slice(-8);
 
-    const response = await fetch("https://wellness-backend-qw0i.onrender.com", {
+    // 🤖 OPENROUTER CALL (CORECT)
+    const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
       method: "POST",
       headers: {
         "Authorization": `Bearer ${OPENROUTER_API_KEY}`,
@@ -83,8 +78,7 @@ app.post("/api/therapy", async (req, res) => {
         messages: [
           {
             role: "system",
-            content:
-              "You are a supportive mental health assistant. Be empathetic, calm, and concise."
+            content: "You are a supportive mental health assistant. Be empathetic, calm, and concise."
           },
           ...limited
         ],
