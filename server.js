@@ -72,7 +72,7 @@ app.post("/api/therapy", async (req, res) => {
 
     const limited = history.slice(-8);
 
-    const response = await fetch("https://youmatter-backend-abjl.onrender.com", {
+    const response = await fetch("https://wellness-backend-qw0i.onrender.com", {
       method: "POST",
       headers: {
         "Authorization": `Bearer ${OPENROUTER_API_KEY}`,
