@@ -72,7 +72,7 @@ app.post("/api/therapy", async (req, res) => {
 
     const limited = history.slice(-8);
 
-    const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+    const response = await fetch("https://youmatter-backend-abjl.onrender.com", {
       method: "POST",
       headers: {
         "Authorization": `Bearer ${OPENROUTER_API_KEY}`,
