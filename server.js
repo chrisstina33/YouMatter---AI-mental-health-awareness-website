@@ -2,76 +2,75 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import rateLimit from "express-rate-limit";
-import jwt from "jsonwebtoken";
 
 dotenv.config();
 
 const app = express();
 app.use(express.json());
 
-// 🌍 CORS (IMPORTANT: fără slash final în origin)
+// 🌍 CORS
 app.use(cors({
   origin: "https://chrisstina33.github.io",
   methods: ["POST"]
 }));
 
-// 🔑 ENV KEYS
+// 🔑 ENV
 const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
-const JWT_SECRET = process.env.JWT_SECRET;
 
-// 🧠 CHAT STORAGE PER USER
+// 🧠 USER STORAGE (simplu, în memorie)
+const users = new Map(); 
 const chats = new Map();
 
-function getHistory(userId) {
-  if (!chats.has(userId)) chats.set(userId, []);
+// helper
+function getUser(userId) {
+  if (!users.has(userId)) {
+    users.set(userId, { created: Date.now() });
+  }
+  return users.get(userId);
+}
+
+function getChat(userId) {
+  if (!chats.has(userId)) {
+    chats.set(userId, []);
+  }
   return chats.get(userId);
 }
 
-// 🔐 AUTH MIDDLEWARE (JWT)
-function auth(req, res, next) {
-  const header = req.headers.authorization;
-
-  if (!header?.startsWith("Bearer ")) {
-    return res.status(401).json({ reply: "Unauthorized" });
-  }
-
-  try {
-    const token = header.split(" ")[1];
-    const decoded = jwt.verify(token, JWT_SECRET);
-    req.userId = decoded.userId;
-    next();
-  } catch {
-    return res.status(403).json({ reply: "Invalid token" });
-  }
-}
-
-// 🧱 RATE LIMIT (per user dacă există, altfel IP)
+// 🧱 rate limit
 const limiter = rateLimit({
   windowMs: 60 * 1000,
   max: 10,
-  keyGenerator: (req) => req.userId || req.ip,
   standardHeaders: true,
-  legacyHeaders: false,
-  message: { reply: "Too many requests. Try again later." }
+  legacyHeaders: false
 });
 
 app.use("/api/therapy", limiter);
 
 // 🎯 MAIN ENDPOINT
-app.post("/api/therapy", auth, async (req, res) => {
+app.post("/api/therapy", async (req, res) => {
   try {
-    const userMessage = req.body.message?.trim();
+    const { message, userId } = req.body;
 
-    if (!userMessage) {
+    // 🚨 CHECK USER LOGIN
+    if (!userId) {
+      return res.status(401).json({
+        reply: "⚠️ You need an account to use this AI. Please sign up or log in."
+      });
+    }
+
+    if (!message?.trim()) {
       return res.status(400).json({ reply: "Empty message." });
     }
 
-    // 🧠 user-specific history
-    const history = getHistory(req.userId);
+    // 👤 ensure user exists
+    getUser(userId);
 
-    history.push({ role: "user", content: userMessage });
+    // 🧠 chat history per user
+    const history = getChat(userId);
 
-    const limitedHistory = history.slice(-8);
+    history.push({ role: "user", content: message });
+
+    const limited = history.slice(-8);
 
     const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
       method: "POST",
@@ -85,24 +84,20 @@ app.post("/api/therapy", auth, async (req, res) => {
           {
             role: "system",
             content:
-              "You are a calm, empathetic mental health support assistant. " +
-              "Be supportive, non-judgmental, and concise."
+              "You are a supportive mental health assistant. Be empathetic, calm, and concise."
           },
-          ...limitedHistory
+          ...limited
         ],
         max_tokens: 200,
-        temperature: 0.8,
-        extra_body: {
-          route: "primary",
-          allow_fallbacks: false
-        }
+        temperature: 0.8
       })
     });
 
     const data = await response.json();
 
     const aiReply =
-      data?.choices?.[0]?.message?.content || "Sorry, I couldn't respond.";
+      data?.choices?.[0]?.message?.content ||
+      "Sorry, I couldn't respond.";
 
     history.push({ role: "assistant", content: aiReply });
 
@@ -114,9 +109,9 @@ app.post("/api/therapy", auth, async (req, res) => {
   }
 });
 
-// 🟢 HEALTH CHECK
+// 🟢 health check
 app.get("/", (req, res) => {
-  res.send("Secure AI backend running 🔐");
+  res.send("AI backend running 👤");
 });
 
 app.listen(process.env.PORT || 3000, () => {
