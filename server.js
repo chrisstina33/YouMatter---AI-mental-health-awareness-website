@@ -9,7 +9,7 @@ const app = express();
 
 // 🔒 CORS RESTRICȚIONAT (schimbă cu domeniul tău real)
 app.use(cors({
-  origin: "https://site-ul-tau.ro",
+  origin: "https://chrisstina33.github.io/YouMatter---AI-mental-health-awareness-website/",
   methods: ["POST"],
 }));
 
