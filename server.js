@@ -7,49 +7,49 @@ dotenv.config();
 
 const app = express();
 
-// 🔒 CORS RESTRICȚIONAT (schimbă cu domeniul tău real)
+// 🔒 CORS – pune domeniul tău real
 app.use(cors({
-  origin: "https://chrisstina33.github.io/YouMatter---AI-mental-health-awareness-website/",
+  origin: "https://chrisstina33.github.io/YouMatter---AI-mental-health-awareness-website/", // ⚠️ schimbă
   methods: ["POST"],
 }));
 
 app.use(express.json());
 
-// 🧱 RATE LIMIT (anti-spam / anti-bot)
+// 🧱 Rate limit – anti-spam
 const limiter = rateLimit({
   windowMs: 60 * 1000, // 1 minut
-  max: 3, // max 3 request-uri / IP / minut
-  message: { reply: "Too many requests. Calm down a bit 😄" }
+  max: 5, // max 5 request-uri/IP
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { reply: "Too many requests. Try again in a minute." }
 });
 
 app.use("/api/therapy", limiter);
 
+// 🔑 Chei din .env
 const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
 const SECRET_KEY = process.env.SECRET_KEY;
 
-// 🔐 Funcție simplă de protecție
-function checkAuth(req, res) {
+// 🔐 Middleware simplu de protecție
+function checkAuth(req, res, next) {
   if (req.headers["x-secret"] !== SECRET_KEY) {
-    res.status(403).json({ reply: "Forbidden" });
-    return false;
+    return res.status(403).json({ reply: "Forbidden" });
   }
-  return true;
+  next();
 }
 
 let chatHistory = [];
 let memory = "";
 
-app.post("/api/therapy", async (req, res) => {
+// 🎯 Endpoint principal
+app.post("/api/therapy", checkAuth, async (req, res) => {
   try {
-    // 🔐 verificare acces
-    if (!checkAuth(req, res)) return;
-
     const userMessage = req.body.message?.trim();
     if (!userMessage) {
       return res.status(400).json({ reply: "Please provide a message." });
     }
 
-    // 🧠 Istoric
+    // 🧠 Istoric limitat (cost control)
     chatHistory.push({ role: "user", content: userMessage });
     const limitedHistory = chatHistory.slice(-6);
 
@@ -60,7 +60,7 @@ app.post("/api/therapy", async (req, res) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "openai/gpt-4o", // 🎯 FORȚAT
+        model: "openai/gpt-4o", // 🔒 FORȚAT
         messages: [
           {
             role: "system",
@@ -68,9 +68,7 @@ app.post("/api/therapy", async (req, res) => {
               "You are an empathetic listener and supportive mental health companion. " +
               "Respond with care, understanding, and attention to the user's feelings. " +
               "Do not judge. Offer gentle support, clarifying questions, and comforting advice. " +
-              "Be swift and precise. Take all facts into consideration. " +
-              "Engage the user emotionally and thoughtfully. " +
-              "If serious issues arise (abuse, drugs, etc.), guide them safely and responsibly."
+              "Be concise and helpful."
           },
           ...limitedHistory
         ],
@@ -78,21 +76,19 @@ app.post("/api/therapy", async (req, res) => {
         temperature: 0.8,
         extra_body: {
           route: "primary",
-          allow_fallbacks: false
+          allow_fallbacks: false // 🔒 fără Claude fallback
         }
       })
     });
 
     const data = await response.json();
-    console.log("OpenRouter response:", data);
 
     let aiReply = "Sorry, I couldn't respond. 😔";
-
     if (data.choices && data.choices.length > 0) {
       aiReply = data.choices[0].message?.content || aiReply;
     }
 
-    // 🧠 salvare istoric
+    // 🧠 Salvare istoric
     chatHistory.push({ role: "assistant", content: aiReply });
 
     memory += `User: ${userMessage}\nAI: ${aiReply}\n`;
@@ -108,17 +104,18 @@ app.post("/api/therapy", async (req, res) => {
   }
 });
 
-// 🧹 curățare istoric
+// 🧹 Curățare istoric
 setInterval(() => {
   if (chatHistory.length > 20) {
     chatHistory.splice(0, chatHistory.length - 20);
   }
 }, 60000);
 
+// 🟢 Health check
 app.get("/", (req, res) => {
-  res.send("AI Therapy Backend is running.");
+  res.send("AI backend running");
 });
 
 app.listen(3000, () => {
-  console.log("Backend running on port 3000 🚀");
+  console.log("Server running on port 3000 🚀");
 });
