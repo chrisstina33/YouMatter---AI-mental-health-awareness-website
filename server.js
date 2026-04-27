@@ -18,7 +18,7 @@ app.use(express.json());
 // 🧱 RATE LIMIT (anti-spam / anti-bot)
 const limiter = rateLimit({
   windowMs: 60 * 1000, // 1 minut
-  max: 5, // max 5 request-uri / IP / minut
+  max: 3, // max 3 request-uri / IP / minut
   message: { reply: "Too many requests. Calm down a bit 😄" }
 });
 
