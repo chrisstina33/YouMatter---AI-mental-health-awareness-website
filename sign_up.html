@@ -371,27 +371,38 @@ btn.addEventListener("click", async () => {
     }
 
     if (step === 2) {
-        if (password.value.length < 6) {
-            alert("Parola prea scurtă");
-            return;
-        }
-
-        try {
-            btn.disabled = true;
-            btn.textContent = "Creating...";
-
-            await createUserWithEmailAndPassword(auth, email.value, password.value);
-
-const user = auth.currentUser;
-
-// 🔐 salvăm identitatea reală Firebase
-localStorage.setItem("uid", user.uid);
-localStorage.setItem("userEmail", email.value);
-localStorage.setItem("memberSince", new Date().toISOString());
-
-window.location.href = "questionnaire.html";
-        }
+    if (password.value.length < 6) {
+        alert("Parola prea scurtă");
+        return;
     }
+
+    try {
+        btn.disabled = true;
+        btn.textContent = "Creating...";
+
+        const userCredential = await createUserWithEmailAndPassword(
+            auth,
+            email.value,
+            password.value
+        );
+
+        const user = userCredential.user;
+
+        // 🔐 salvare UID real Firebase
+        localStorage.setItem("uid", user.uid);
+        localStorage.setItem("userEmail", email.value);
+        localStorage.setItem("memberSince", new Date().toISOString());
+
+        window.location.href = "questionnaire.html";
+
+    } catch (e) {
+        console.error(e);
+        alert(e.message);
+
+        btn.disabled = false;
+        btn.textContent = "Create Account";
+    }
+}
 });
 </script>
 <script>
