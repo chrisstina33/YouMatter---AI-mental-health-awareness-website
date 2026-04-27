@@ -40,7 +40,9 @@ app.post("/api/therapy", async (req, res) => {
                      "Be swifty and precise. You should take all the facts in consideration." +
                      "Have intriguing conversations with the user. Make him feel engaged in the conversation, so that they can invest emotionally in their own sayings."+
                     "If there are serious situations, for eg abuse and drugs, legal or illegal, you should tell them how to take cautions and make them feel safe and included. Ask them comfortable questions and, depending on the context, move on to another subject."
-              
+            extra_body: {
+  route: "primary"
+}  
               
           },
           ...limitedHistory
