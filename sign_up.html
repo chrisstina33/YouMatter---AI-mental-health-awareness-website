@@ -382,16 +382,14 @@ btn.addEventListener("click", async () => {
 
             await createUserWithEmailAndPassword(auth, email.value, password.value);
 
-            // SALVARE LOCALĂ
-            localStorage.setItem("userEmail", email.value);
-            localStorage.setItem("memberSince", new Date().toISOString());
+const user = auth.currentUser;
 
-            window.location.href = "questionnaire.html";
+// 🔐 salvăm identitatea reală Firebase
+localStorage.setItem("uid", user.uid);
+localStorage.setItem("userEmail", email.value);
+localStorage.setItem("memberSince", new Date().toISOString());
 
-        } catch (e) {
-            alert(e.message);
-            btn.disabled = false;
-            btn.textContent = "Create Account";
+window.location.href = "questionnaire.html";
         }
     }
 });
