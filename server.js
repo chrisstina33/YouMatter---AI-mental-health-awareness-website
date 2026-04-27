@@ -42,6 +42,7 @@ app.post("/api/therapy", async (req, res) => {
                     "If there are serious situations, for eg abuse and drugs, legal or illegal, you should tell them how to take cautions and make them feel safe and included. Ask them comfortable questions and, depending on the context, move on to another subject."
             extra_body: {
   route: "primary"
+  allow_fallbacks: false
 }  
               
           },
