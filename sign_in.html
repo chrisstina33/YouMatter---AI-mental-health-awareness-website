@@ -197,20 +197,24 @@ btn.addEventListener("click", async () => {
     const password = document.getElementById("password").value;
 
     try {
-        btn.disabled = true;
-        btn.textContent = "Logging in...";
+    btn.disabled = true;
+    btn.textContent = "Logging in...";
 
-        await signInWithEmailAndPassword(auth, email, password);
+    const userCredential = await signInWithEmailAndPassword(auth, email, password);
 
-        localStorage.setItem("userEmail", email);
+    const user = userCredential.user;
 
-        window.location.href = "account.html";
+    // 🔐 salvăm identitatea reală
+    localStorage.setItem("uid", user.uid);
+    localStorage.setItem("userEmail", email);
 
-    } catch (e) {
-        alert("Email sau parolă greșită");
-        btn.disabled = false;
-        btn.textContent = "Sign in";
-    }
+    window.location.href = "account.html";
+
+} catch (e) {
+    alert("Email sau parolă greșită");
+    btn.disabled = false;
+    btn.textContent = "Sign in";
+}
 });
 </script>
 <script>
