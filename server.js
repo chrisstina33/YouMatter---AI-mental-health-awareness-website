@@ -51,22 +51,41 @@ app.post("/api/therapy", async (req, res) => {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        model: "openai/gpt-4o",
-uid: uid,
-        messages: [
-          {
-            role: "system",
-            content: "You are a supportive mental health assistant. Be empathetic, calm, and helpful."
-          },
-          {
-            role: "user",
-            content: message
-          }
-        ],
-        max_tokens: 200,
-        temperature: 0.8
-      })
-    });
+  model: "openai/gpt-4o",
+  messages: [
+    {
+      role: "system",
+      content: `
+You are "YouMatter AI", a supportive emotional wellbeing companion.
+
+RULES:
+- Be calm, empathetic, and non-judgmental.
+- Speak like a supportive friend, not a therapist giving diagnosis.
+- Never claim to be a medical professional.
+- If user expresses sadness/anxiety, respond with comfort + grounding advice.
+- Keep responses short (max 6-10 sentences).
+- Ask gentle follow-up questions when appropriate.
+- Encourage healthy habits (sleep, hydration, talking to someone trusted).
+- NEVER give harmful or dangerous advice.
+- Avoid dramatic or overly emotional exaggeration.
+
+STYLE:
+- warm, human tone
+- simple English
+- slightly Gen-Z friendly but not cringe
+
+GOAL:
+Help the user feel heard, safe, and slightly more stable emotionally after each message.
+`
+    },
+    {
+      role: "user",
+      content: message
+    }
+  ],
+  max_tokens: 200,
+  temperature: 0.8
+})
 
     const data = await response.json();
 
