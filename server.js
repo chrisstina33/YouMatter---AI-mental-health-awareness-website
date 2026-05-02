@@ -52,6 +52,7 @@ app.post("/api/therapy", async (req, res) => {
       },
       body: JSON.stringify({
         model: "openai/gpt-4o",
+uid: uid,
         messages: [
           {
             role: "system",
