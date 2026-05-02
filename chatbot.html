@@ -466,6 +466,28 @@ async function sendMessage(){
 }
 sendButton.addEventListener("click", sendMessage);
 input.addEventListener("keypress", e => { if(e.key === "Enter") sendMessage(); });
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBHbh4I3-Lf3nSqghLMuaD6--QBawGIiGg",
+  authDomain: "you-matter-11.firebaseapp.com",
+  projectId: "you-matter-11",
+  appId: "1:84371060509:web:cfade62be30e34390113f4"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
+// 🔐 AICI E MAGIA
+onAuthStateChanged(auth, (user) => {
+    if (user) {
+        localStorage.setItem("uid", user.uid);
+        console.log("UID set:", user.uid);
+    } else {
+        console.log("Nu e logat");
+    }
+});
 </script>
 </body>
 </html>
