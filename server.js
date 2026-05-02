@@ -45,17 +45,17 @@ app.post("/api/therapy", async (req, res) => {
 
     // 🤖 OPENROUTER REQUEST
     const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${OPENROUTER_API_KEY}`,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-  model: "openai/gpt-4o",
-  messages: [
-    {
-      role: "system",
-      content: `
+  method: "POST",
+  headers: {
+    "Authorization": `Bearer ${OPENROUTER_API_KEY}`,
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify({
+    model: "openai/gpt-4o",
+    messages: [
+      {
+        role: "system",
+        content: `
 You are "YouMatter AI", a supportive emotional wellbeing companion.
 
 RULES:
@@ -76,18 +76,22 @@ STYLE:
 
 GOAL:
 Help the user feel heard, safe, and slightly more stable emotionally after each message.
-`
-    },
-    {
-      role: "user",
-      content: message
-    }
-  ],
-  max_tokens: 200,
-  temperature: 0.8
-})
-
-    const data = await response.json();
+        `
+      },
+      {
+        role: "user",
+        content: message
+      }
+    ],
+    max_tokens: 200,
+    temperature: 0.8
+  })
+});
+if (!response.ok) {
+  const errText = await response.text();
+  console.log("OpenRouter error:", errText);
+}
+const data = await response.json();
 
     const aiReply =
       data?.choices?.[0]?.message?.content ||
