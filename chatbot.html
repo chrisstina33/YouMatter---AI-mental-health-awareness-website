@@ -428,6 +428,7 @@ function addMessage(text, type){
 async function sendMessage(){
     const text = input.value.trim();
     if(!text) return;
+
     addMessage(text, "user");
     input.value = "";
 
@@ -435,29 +436,28 @@ async function sendMessage(){
     sendButton.innerText = "...";
 
     try {
+        const uid = localStorage.getItem("uid");
+
+        console.log("TRIMIT UID:", uid); // 🔍 debug
+
         const res = await fetch("https://wellness-backend-qw0i.onrender.com/api/therapy", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify({ message: text })
+            body: JSON.stringify({ 
+                message: text,
+                uid: uid
+            })
         });
 
         const data = await res.json();
-        let aiReply;
 
-        if(data.reply){ 
-            aiReply = data.reply;
-        } else if(data.error){
-            aiReply="Error: "+data.error;
-        } else{
-            aiReply="Unexpected response from server";
-        }
-
+        const aiReply = data.reply || "Unexpected response";
         addMessage(aiReply, "ai");
 
     } catch (error) {
-        addMessage("AI unavailable. Check your connection.", "ai");
+        addMessage("AI unavailable.", "ai");
         console.error(error);
     } finally {
         sendButton.disabled = false;
