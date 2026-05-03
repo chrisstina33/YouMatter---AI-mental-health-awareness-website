@@ -424,15 +424,17 @@ function addMessage(text, type){
     chatContainer.scrollTop = chatContainer.scrollHeight;
 }
 
-async function sendMessage(){
-const uid = localStorage.getItem("uid");
+async function sendMessage() {
+try {
+    const uid = localStorage.getItem("uid");
 
-if (!uid) {
-    addMessage("You are not logged in yet. Please wait or refresh.", "ai");
-    return;
-}
+    if (!uid) {
+        addMessage("You are not logged in yet. Please wait or refresh.", "ai");
+        return;
+    }
+
     const text = input.value.trim();
-    if(!text) return;
+    if (!text) return;
 
     addMessage(text, "user");
     input.value = "";
@@ -440,30 +442,29 @@ if (!uid) {
     sendButton.disabled = true;
     sendButton.innerText = "...";
 
-   
-        const res = await fetch("https://wellness-backend-qw0i.onrender.com", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ 
-                message: text,
-                uid: uid
-            })
-        });
+    const res = await fetch("https://wellness-backend-qw0i.onrender.com/api/therapy", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+            message: text,
+            uid: uid
+        })
+    });
 
-        const data = await res.json();
+    const data = await res.json();
 
-        const aiReply = data.reply || "Unexpected response";
-        addMessage(aiReply, "ai");
+    const aiReply = data.reply || "Unexpected response";
+    addMessage(aiReply, "ai");
 
-    } catch (error) {
-        addMessage("AI unavailable.", "ai");
-        console.error(error);
-    } finally {
-        sendButton.disabled = false;
-        sendButton.innerText = "Send";
-    }
+} catch (error) {
+    addMessage("AI unavailable.", "ai");
+    console.error(error);
+} finally {
+    sendButton.disabled = false;
+    sendButton.innerText = "Send";
+}
 }
 sendButton.addEventListener("click", sendMessage);
 
@@ -493,15 +494,7 @@ onAuthStateChanged(auth, (user) => {
         console.log("Nu e logat");
     }
 });
-import { getAuth } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-const auth = getAuth();
-const user = auth.currentUser;
-
-if (!user) {
-    addMessage("You are not logged in.", "ai");
-    return;
-}
 </script>
 
 </body>
