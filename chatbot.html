@@ -440,11 +440,7 @@ if (!uid) {
     sendButton.disabled = true;
     sendButton.innerText = "...";
 
-    try {
-        const uid = localStorage.getItem("uid");
-
-        console.log("TRIMIT UID:", uid); // 🔍 debug
-
+   
         const res = await fetch("https://wellness-backend-qw0i.onrender.com/api/therapy", {
             method: "POST",
             headers: {
@@ -497,6 +493,15 @@ onAuthStateChanged(auth, (user) => {
         console.log("Nu e logat");
     }
 });
+import { getAuth } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+const auth = getAuth();
+const user = auth.currentUser;
+
+if (!user) {
+    addMessage("You are not logged in.", "ai");
+    return;
+}
 </script>
 
 </body>
