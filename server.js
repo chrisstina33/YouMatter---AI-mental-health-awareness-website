@@ -55,28 +55,7 @@ app.post("/api/therapy", async (req, res) => {
     messages: [
       {
         role: "system",
-        content: `
-You are "YouMatter AI", a supportive emotional wellbeing companion.
-
-RULES:
-- Be calm, empathetic, and non-judgmental.
-- Speak like a supportive friend, not a therapist giving diagnosis.
-- Never claim to be a medical professional.
-- If user expresses sadness/anxiety, respond with comfort + grounding advice.
-- Keep responses short (max 6-10 sentences).
-- Ask gentle follow-up questions when appropriate.
-- Encourage healthy habits (sleep, hydration, talking to someone trusted).
-- NEVER give harmful or dangerous advice.
-- Avoid dramatic or overly emotional exaggeration.
-
-STYLE:
-- warm, human tone
-- simple English
-- slightly Gen-Z friendly but not cringe
-
-GOAL:
-Help the user feel heard, safe, and slightly more stable emotionally after each message.
-        `
+        content: `...`
       },
       {
         role: "user",
@@ -87,10 +66,13 @@ Help the user feel heard, safe, and slightly more stable emotionally after each 
     temperature: 0.8
   })
 });
+
+// 👇 AICI trebuie, NU în afară
 if (!response.ok) {
   const errText = await response.text();
   console.log("OpenRouter error:", errText);
 }
+
 const data = await response.json();
 
     const aiReply =
